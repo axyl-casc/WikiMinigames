@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='UTF-8'>
+  <title>Robot Blaster Mini‑Game</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #0e0e0e;
+      color: #fafafa;
+      font-family: Arial, Helvetica, sans-serif;
+      overflow: hidden;
+    }
+
+    #gameCanvas {
+      display: block;
+      margin: auto;
+      background: #111a27;
+      border: 4px solid #2c3e50;
+      border-radius: 8px;
+    }
+
+    #overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.8);
+      gap: 1rem;
+      text-align: center;
+    }
+
+    #overlay h1 {
+      font-size: 2.5rem;
+      margin: 0;
+    }
+
+    #overlay button {
+      padding: 0.75rem 1.5rem;
+      font-size: 1.1rem;
+      background: #27ae60;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #fff;
+      transition: transform 0.1s ease;
+    }
+
+    #overlay button:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <div id='overlay'>
+    <h1>🤖 Robot Blaster</h1>
+    <p>Use ← ↑ → ↓ to move<br>Press Space to shoot<br>Survive 30 seconds!</p>
+    <button id='startBtn'>Start Game</button>
+  </div>
+  <canvas id='gameCanvas' width='600' height='400'></canvas>
+
+  <script>
+    // Game constants
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const overlay = document.getElementById('overlay');
+    const startBtn = document.getElementById('startBtn');
+
+    const PLAYER_SIZE = 32;
+    const BULLET_SIZE = 6;
+    const ENEMY_SIZE = 28;
+    const PLAYER_SPEED = 4;
+    const BULLET_SPEED = 6;
+    const ENEMY_SPEED = 2;
+    const SPAWN_INTERVAL = 1000; // ms
+    const GAME_DURATION = 30000; // ms
+
+    let keys = {};
+    let bullets = [];
+    let enemies = [];
+    let score = 0;
+    let startTime = null;
+    let lastSpawn = 0;
+    let animationId = null;
+
+    const player = {
+      x: canvas.width / 2 - PLAYER_SIZE / 2,
+      y: canvas.height - PLAYER_SIZE - 10,
+      width: PLAYER_SIZE,
+      height: PLAYER_SIZE
+    };
+
+    // Event listeners
+    document.addEventListener('keydown', (e) => {
+      keys[e.code] = true;
+      // Prevent arrow keys from scrolling page
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) {
+        e.preventDefault();
+      }
+      if (e.code === 'Space') shoot();
+    });
+
+    document.addEventListener('keyup', (e) => {
+      keys[e.code] = false;
+    });
+
+    startBtn.addEventListener('click', () => {
+      resetGame();
+      overlay.style.display = 'none';
+      startTime = performance.now();
+      lastSpawn = performance.now();
+      animationId = requestAnimationFrame(gameLoop);
+    });
+
+    function resetGame() {
+      bullets = [];
+      enemies = [];
+      score = 0;
+      player.x = canvas.width / 2 - PLAYER_SIZE / 2;
+      player.y = canvas.height - PLAYER_SIZE - 10;
+    }
+
+    function shoot() {
+      bullets.push({
+        x: player.x + PLAYER_SIZE / 2 - BULLET_SIZE / 2,
+        y: player.y,
+        width: BULLET_SIZE,
+        height: BULLET_SIZE
+      });
+    }
+
+    function spawnEnemy() {
+      const x = Math.random() * (canvas.width - ENEMY_SIZE);
+      enemies.push({ x: x, y: -ENEMY_SIZE, width: ENEMY_SIZE, height: ENEMY_SIZE });
+    }
+
+    function update(dt) {
+      // Move player
+      if (keys['ArrowLeft']) player.x -= PLAYER_SPEED;
+      if (keys['ArrowRight']) player.x += PLAYER_SPEED;
+      if (keys['ArrowUp']) player.y -= PLAYER_SPEED;
+      if (keys['ArrowDown']) player.y += PLAYER_SPEED;
+
+      // Boundary clamp
+      player.x = Math.max(0, Math.min(canvas.width - PLAYER_SIZE, player.x));
+      player.y = Math.max(0, Math.min(canvas.height - PLAYER_SIZE, player.y));
+
+      // Update bullets
+      bullets.forEach(b => b.y -= BULLET_SPEED);
+      bullets = bullets.filter(b => b.y + BULLET_SIZE > 0);
+
+      // Spawn enemies
+      if (performance.now() - lastSpawn > SPAWN_INTERVAL) {
+        spawnEnemy();
+        lastSpawn = performance.now();
+      }
+
+      // Update enemies
+      enemies.forEach(e => e.y += ENEMY_SPEED);
+      enemies = enemies.filter(e => e.y < canvas.height + ENEMY_SIZE);
+
+      // Collision detection
+      bullets.forEach((b, bi) => {
+        enemies.forEach((e, ei) => {
+          if (isColliding(b, e)) {
+            bullets.splice(bi, 1);
+            enemies.splice(ei, 1);
+            score += 1;
+          }
+        });
+      });
+
+      // Player collision with enemy (optional)
+      enemies.forEach(e => {
+        if (isColliding(player, e)) {
+          endGame(false);
+        }
+      });
+
+      // End game after duration
+      if (performance.now() - startTime >= GAME_DURATION) {
+        endGame(true);
+      }
+    }
+
+    function draw() {
+      // Clear
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw player
+      ctx.fillStyle = '#00d8ff';
+      ctx.fillRect(player.x, player.y, PLAYER_SIZE, PLAYER_SIZE);
+
+      // Draw bullets
+      ctx.fillStyle = '#f4d03f';
+      bullets.forEach(b => ctx.fillRect(b.x, b.y, BULLET_SIZE, BULLET_SIZE));
+
+      // Draw enemies
+      ctx.fillStyle = '#e74c3c';
+      enemies.forEach(e => ctx.fillRect(e.x, e.y, ENEMY_SIZE, ENEMY_SIZE));
+
+      // Draw score and timer
+      ctx.fillStyle = '#fafafa';
+      ctx.font = '16px monospace';
+      ctx.fillText(`Score: ${score}`, 10, 20);
+      const remaining = Math.max(0, GAME_DURATION - (performance.now() - startTime));
+      ctx.fillText(`Time: ${Math.ceil(remaining / 1000)}s`, canvas.width - 100, 20);
+    }
+
+    function gameLoop(timestamp) {
+      update();
+      draw();
+      animationId = requestAnimationFrame(gameLoop);
+    }
+
+    function isColliding(a, b) {
+      return (
+        a.x < b.x + b.width &&
+        a.x + a.width > b.x &&
+        a.y < b.y + b.height &&
+        a.y + a.height > b.y
+      );
+    }
+
+    function endGame(completed) {
+      cancelAnimationFrame(animationId);
+      overlay.innerHTML = `
+        <h1>${completed ? 'Great Job!' : 'Game Over'}</h1>
+        <p>Your score: ${score}</p>
+        <button id='startBtn'>Play Again</button>
+      `;
+      overlay.style.display = 'flex';
+      // Re-bind
+      document.getElementById('startBtn').addEventListener('click', () => {
+        resetGame();
+        overlay.style.display = 'none';
+        startTime = performance.now();
+        lastSpawn = performance.now();
+        animationId = requestAnimationFrame(gameLoop);
+      });
+    }
+  </script>
+</body>
+</html>
