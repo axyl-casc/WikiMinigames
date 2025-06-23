@@ -92,9 +92,13 @@ function gameLoop(){animationId=requestAnimationFrame(gameLoop);update();draw();
 
 function endGame(done){
   cancelAnimationFrame(animationId);
-  saveScore(SCORE_SLOT,score);
+  if(done){
+    saveScore(SCORE_SLOT,score + 10);
+  } else {
+    saveScore(SCORE_SLOT,score);
+  }
   const best=getScore(SCORE_SLOT);
-  overlay.innerHTML=`<h1>${done?'Mission Complete!':'Tank Destroyed'}</h1>
+  overlay.innerHTML=`<h1>${done?'Mission Complete! +10 to score!':'Tank Destroyed'}</h1>
                      <p>Your score: ${score}</p><p>High Score: ${best}</p>
                      <button id="playAgain">Play Again</button>`;
   overlay.style.display='flex';
