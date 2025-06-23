@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Java Data‑Types – Quick Quiz</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            background: #0e0e0e;
+            color: #fafafa;
+            margin: 0;
+            padding: 2rem 1rem;
+            display: flex;
+            justify-content: center;
+        }
+        main {
+            max-width: 720px;
+            width: 100%;
+            display: grid;
+            gap: 1.25rem;
+        }
+        h1 {
+            font-size: 1.75rem;
+            text-align: center;
+        }
+        .question {
+            background: #111a27;
+            border: 2px solid #2c3e50;
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.35);
+        }
+        input[type="text"] {
+            background: #1c2737;
+            color: #fafafa;
+            border: 1px solid #445469;
+            border-radius: 0.5rem;
+            padding: 0.35rem 0.6rem;
+            width: 140px;
+        }
+        button {
+            cursor: pointer;
+            background: #1877f2;
+            border: none;
+            border-radius: 0.6rem;
+            padding: 0.55rem 1.4rem;
+            font-size: 1rem;
+            color: #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        .feedback {
+            margin-left: 0.5rem;
+            font-weight: 700;
+        }
+        .correct { color: #4caf50; }
+        .incorrect { color: #ff5252; }
+        #answers {
+            display: none;
+            background: #1c2737;
+            border: 1px solid #445469;
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Java Data Types – Quick Quiz</h1>
+
+        <div class="question" data-id="q1">
+            <p>1. Which data type stores <strong>whole numbers</strong>? <input type="text" placeholder="?" /></p>
+        </div>
+
+        <div class="question" data-id="q2">
+            <p>2. Which data type stores numbers <strong>with decimals</strong>? <input type="text" placeholder="?" /></p>
+        </div>
+
+        <div class="question" data-id="q3">
+            <p>3. Which data type stores a <strong>single letter</strong>? <input type="text" placeholder="?" /></p>
+        </div>
+
+        <div class="question" data-id="q4">
+            <p>4. Which data type stores <strong>words or sentences</strong>? <input type="text" placeholder="?" /></p>
+        </div>
+
+        <button id="checkBtn">Check Answers</button>
+        <p id="score" aria-live="polite"></p>
+        <div id="answers"></div>
+    </main>
+
+    <script>
+        const answerKey = {
+            q1: "int",
+            q2: "double",
+            q3: "char",
+            q4: "String"
+        };
+
+        const checkBtn = document.getElementById("checkBtn");
+        const scoreDisplay = document.getElementById("score");
+        const answersDiv = document.getElementById("answers");
+
+        checkBtn.addEventListener("click", () => {
+            let correct = 0;
+            const questions = document.querySelectorAll(".question");
+
+            questions.forEach(q => {
+                const id = q.dataset.id;
+                const input = q.querySelector("input");
+                const userAnswer = input.value.trim().toLowerCase();
+                const rightAnswer = answerKey[id];
+                const isCorrect = userAnswer === rightAnswer;
+
+                // Remove previous feedback
+                q.querySelectorAll(".feedback").forEach(el => el.remove());
+
+                const fb = document.createElement("span");
+                fb.classList.add("feedback", isCorrect ? "correct" : "incorrect");
+                fb.textContent = isCorrect ? "✔" : "✘";
+                q.appendChild(fb);
+
+                if (isCorrect) correct++;
+            });
+
+            scoreDisplay.textContent = `You got ${correct} / ${questions.length} correct.`;
+            saveScore(3, correct);
+
+            // Show correct answers
+            const listItems = Object.values(answerKey)
+                .map((ans, i) => `<li><code>${ans}</code></li>`) 
+                .join("");
+            answersDiv.innerHTML = `<h2>Correct Answers</h2><ol>${listItems}</ol>`;
+            answersDiv.style.display = "block";
+        });
+    </script>
+</body>
+</html>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Tank Blaster — Mouse Turret & True Tank Controls</title>
+  <title>Tank Blaster — Mouse Turret & True Tank Controls</title>
   <style>
     body,html{margin:0;padding:0;height:100%;background:#0e0e0e;color:#fafafa;font-family:Arial,Helvetica,sans-serif;overflow:hidden}
     #gameCanvas{display:block;margin:auto;background:#111a27;border:4px solid #2c3e50;border-radius:8px;cursor:crosshair}
@@ -10,224 +10,95 @@
     #overlay h1{font-size:2.2rem;margin:0}
     #overlay button{padding:.75rem 1.5rem;font-size:1.1rem;background:#27ae60;border:none;border-radius:6px;cursor:pointer;color:#fff;transition:transform .1s}
     #overlay button:hover{transform:scale(1.05)}
-    ul.scoreboard{list-style:none;margin:0;padding:0;text-align:left}
-    ul.scoreboard li{font-family:"Courier New",monospace;margin:.15rem 0}
   </style>
 </head>
 <body>
   <div id="overlay">
-    <h1>🛡️ Tank Blaster</h1>
-    <p>← / → rotate • ↑ / ↓ drive • Mouse to aim • Click to fire<br />Survive 30 s and destroy the red squares!</p>
+    <h1>🛡️ Tank Blaster</h1>
+    <p>← / → rotate • ↑ / ↓ drive • Mouse to aim • Click to fire<br>Survive 30 s and destroy the red squares!</p>
     <button id="startBtn">Start Game</button>
-    <div id="scoreboardWrap" style="display:none">
-      <h2 style="margin:0;font-size:1.2rem">🏆 Top Scores</h2>
-      <ul id="scoreboard" class="scoreboard"></ul>
-    </div>
   </div>
+
   <canvas id="gameCanvas" width="640" height="480"></canvas>
+  <script src="shared.js"></script>
 
 <script>
-// Canvas & UI refs
-const canvas=document.getElementById('gameCanvas');
-const ctx=canvas.getContext('2d');
-const overlay=document.getElementById('overlay');
-const startBtn=document.getElementById('startBtn');
-const boardWrap=document.getElementById('scoreboardWrap');
-const boardList=document.getElementById('scoreboard');
+const canvas   = document.getElementById('gameCanvas');
+const ctx      = canvas.getContext('2d');
+const overlay  = document.getElementById('overlay');
+const startBtn = document.getElementById('startBtn');
 
-// Gameplay constants
-const PLAYER_SIZE=36;
-const BULLET_RADIUS=4;
-const ENEMY_SIZE=28;
-const ROTATE_SPEED=0.08;  // radians per frame
-const MOVE_SPEED=1.4;
-const BULLET_SPEED=6;
-const ENEMY_SPEED=1.0;
-const SPAWN_INTERVAL=1200;   // ms
-const GAME_DURATION=30000;   // ms
-const MAX_SCORES=5;
+const PLAYER_SIZE=36,BULLET_RADIUS=4,ENEMY_SIZE=28,ROTATE_SPEED=0.04,MOVE_SPEED=1,
+      BULLET_SPEED=6,ENEMY_SPEED=1,SPAWN_INTERVAL=1200,GAME_DURATION=30000,SCORE_SLOT=2;
 
-// State variables
 let keys={},bullets=[],enemies=[],score=0,startTime=0,lastSpawn=0,animationId=0;
 
-// Player representation
-const player={
-  x:canvas.width/2,
-  y:canvas.height-PLAYER_SIZE*2,
-  bodyAngle:-Math.PI/2,   // facing up
-  turretAngle:-Math.PI/2  // follows mouse
-};
+const player={x:canvas.width/2,y:canvas.height-PLAYER_SIZE*2,bodyAngle:-Math.PI/2,turretAngle:-Math.PI/2};
 
-/* ——————————————————— Event listeners ——————————————————— */
-addEventListener('keydown',e=>{
-  keys[e.code]=true;
-  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
-});
-addEventListener('keyup',e=>{keys[e.code]=false;});
-canvas.addEventListener('mousemove',e=>{
-  const rect=canvas.getBoundingClientRect();
-  const mx=e.clientX-rect.left, my=e.clientY-rect.top;
-  player.turretAngle=Math.atan2(my-player.y,mx-player.x);
-});
+addEventListener('keydown',e=>{keys[e.code]=true;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();});
+addEventListener('keyup',e=>keys[e.code]=false);
+canvas.addEventListener('mousemove',e=>{const r=canvas.getBoundingClientRect();player.turretAngle=Math.atan2(e.clientY-r.top-player.y,e.clientX-r.left-player.x);});
 canvas.addEventListener('click',shoot);
-startBtn.addEventListener('click',beginGame);
+startBtn.addEventListener('click',startGame);
 
-/* ——————————————————— Game Functions ——————————————————— */
-function beginGame(){
-  resetGame();
-  overlay.style.display='none';
-  boardWrap.style.display='none';
-  startTime=performance.now();
-  lastSpawn=startTime;
-  animationId=requestAnimationFrame(gameLoop);
-}
+function startGame(){resetGame();overlay.style.display='none';startTime=performance.now();lastSpawn=startTime;animationId=requestAnimationFrame(gameLoop);}
+function resetGame(){bullets=[];enemies=[];score=0;player.x=canvas.width/2;player.y=canvas.height-PLAYER_SIZE*2;player.bodyAngle=player.turretAngle=-Math.PI/2;}
 
-function resetGame(){
-  bullets=[];
-  enemies=[];
-  score=0;
-  player.x=canvas.width/2;
-  player.y=canvas.height-PLAYER_SIZE*2;
-  player.bodyAngle=-Math.PI/2;
-  player.turretAngle=-Math.PI/2;
-}
+function shoot(){const mx=player.x+Math.cos(player.turretAngle)*PLAYER_SIZE/2,my=player.y+Math.sin(player.turretAngle)*PLAYER_SIZE/2;
+  bullets.push({x:mx,y:my,vx:Math.cos(player.turretAngle)*BULLET_SPEED,vy:Math.sin(player.turretAngle)*BULLET_SPEED});}
 
-function shoot(){
-  const muzzleX=player.x+Math.cos(player.turretAngle)*(PLAYER_SIZE/2);
-  const muzzleY=player.y+Math.sin(player.turretAngle)*(PLAYER_SIZE/2);
-  bullets.push({
-    x:muzzleX,
-    y:muzzleY,
-    vx:Math.cos(player.turretAngle)*BULLET_SPEED,
-    vy:Math.sin(player.turretAngle)*BULLET_SPEED
-  });
-}
-
-function spawnEnemy(){
-  // Spawn at random edge but inside viewport, then give random bouncing velocity
-  const edge=Math.floor(Math.random()*4); // 0 top,1 right,2 bottom,3 left
-  let x,y;
-  if(edge===0){x=Math.random()*(canvas.width-ENEMY_SIZE); y=-ENEMY_SIZE;}
-  else if(edge===1){x=canvas.width; y=Math.random()*(canvas.height-ENEMY_SIZE);} 
-  else if(edge===2){x=Math.random()*(canvas.width-ENEMY_SIZE); y=canvas.height;} 
-  else {x=-ENEMY_SIZE; y=Math.random()*(canvas.height-ENEMY_SIZE);} // left
-
-  const angle=Math.random()*Math.PI*2;
-  const speed=ENEMY_SPEED*(0.7+Math.random()*0.6);
-  enemies.push({x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed});
-}
+function spawnEnemy(){const edge=Math.floor(Math.random()*4);let x,y;if(edge===0){x=Math.random()*(canvas.width-ENEMY_SIZE);y=-ENEMY_SIZE;}
+ else if(edge===1){x=canvas.width;y=Math.random()*(canvas.height-ENEMY_SIZE);}else if(edge===2){x=Math.random()*(canvas.width-ENEMY_SIZE);y=canvas.height;}
+ else{x=-ENEMY_SIZE;y=Math.random()*(canvas.height-ENEMY_SIZE);}const a=Math.random()*Math.PI*2,s=ENEMY_SPEED*(0.7+Math.random()*0.6);
+ enemies.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s});}
 
 function update(){
-  /* —— Player rotation —— */
-  if(keys['ArrowLeft']) player.bodyAngle-=ROTATE_SPEED;
-  if(keys['ArrowRight']) player.bodyAngle+=ROTATE_SPEED;
-
-  /* —— Player movement —— */
-  const forwardX=Math.cos(player.bodyAngle), forwardY=Math.sin(player.bodyAngle);
-  if(keys['ArrowUp']){
-    player.x+=forwardX*MOVE_SPEED;
-    player.y+=forwardY*MOVE_SPEED;
-  }
-  if(keys['ArrowDown']){
-    player.x-=forwardX*MOVE_SPEED;
-    player.y-=forwardY*MOVE_SPEED;
-  }
-  // Clamp
+  if(keys.ArrowLeft)player.bodyAngle-=ROTATE_SPEED;if(keys.ArrowRight)player.bodyAngle+=ROTATE_SPEED;
+  const fx=Math.cos(player.bodyAngle),fy=Math.sin(player.bodyAngle);if(keys.ArrowUp){player.x+=fx*MOVE_SPEED;player.y+=fy*MOVE_SPEED;}
+  if(keys.ArrowDown){player.x-=fx*MOVE_SPEED;player.y-=fy*MOVE_SPEED;}
   player.x=Math.max(PLAYER_SIZE/2,Math.min(canvas.width-PLAYER_SIZE/2,player.x));
   player.y=Math.max(PLAYER_SIZE/2,Math.min(canvas.height-PLAYER_SIZE/2,player.y));
 
-  /* —— Bullets —— */
-  bullets.forEach(b=>{b.x+=b.vx; b.y+=b.vy;});
+  bullets.forEach(b=>{b.x+=b.vx;b.y+=b.vy;});
   bullets=bullets.filter(b=>b.x>-BULLET_RADIUS&&b.x<canvas.width+BULLET_RADIUS&&b.y>-BULLET_RADIUS&&b.y<canvas.height+BULLET_RADIUS);
 
-  /* —— Enemies —— */
-  if(performance.now()-lastSpawn>SPAWN_INTERVAL){ spawnEnemy(); lastSpawn=performance.now(); }
-  enemies.forEach(e=>{
-    e.x+=e.vx; e.y+=e.vy;
-    // Bounce off walls
-    if(e.x<=0 || e.x>=canvas.width-ENEMY_SIZE){ e.vx*=-1; e.x=Math.max(0,Math.min(canvas.width-ENEMY_SIZE,e.x)); }
-    if(e.y<=0 || e.y>=canvas.height-ENEMY_SIZE){ e.vy*=-1; e.y=Math.max(0,Math.min(canvas.height-ENEMY_SIZE,e.y)); }
-  });
+  if(performance.now()-lastSpawn>SPAWN_INTERVAL){spawnEnemy();lastSpawn=performance.now();}
+  enemies.forEach(e=>{e.x+=e.vx;e.y+=e.vy;
+    if(e.x<=0||e.x>=canvas.width-ENEMY_SIZE){e.vx*=-1;e.x=Math.max(0,Math.min(canvas.width-ENEMY_SIZE,e.x));}
+    if(e.y<=0||e.y>=canvas.height-ENEMY_SIZE){e.vy*=-1;e.y=Math.max(0,Math.min(canvas.height-ENEMY_SIZE,e.y));}});
 
-  /* —— Collisions —— */
-  bullets.forEach((b,bi)=>{
-    enemies.forEach((e,ei)=>{
-      if(b.x>e.x && b.x<e.x+ENEMY_SIZE && b.y>e.y && b.y<e.y+ENEMY_SIZE){
-        bullets.splice(bi,1); enemies.splice(ei,1); score++;
-      }
-    });
-  });
+  bullets.forEach((b,bi)=>{enemies.forEach((e,ei)=>{if(b.x>e.x&&b.x<e.x+ENEMY_SIZE&&b.y>e.y&&b.y<e.y+ENEMY_SIZE){bullets.splice(bi,1);enemies.splice(ei,1);score++;}});});
+  enemies.forEach(e=>{if(Math.hypot(player.x-(e.x+ENEMY_SIZE/2),player.y-(e.y+ENEMY_SIZE/2))<PLAYER_SIZE/2+ENEMY_SIZE/2)endGame(false);});
 
-  // Player vs enemy
-  enemies.forEach(e=>{
-    const dx=player.x-(e.x+ENEMY_SIZE/2), dy=player.y-(e.y+ENEMY_SIZE/2);
-    if(Math.hypot(dx,dy)<PLAYER_SIZE/2+ENEMY_SIZE/2){ endGame(false); }
-  });
-
-  /* —— Timer —— */
-  if(performance.now()-startTime>=GAME_DURATION){ endGame(true); }
+  if(performance.now()-startTime>=GAME_DURATION)endGame(true);
 }
 
 function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.save();ctx.translate(player.x,player.y);ctx.rotate(player.bodyAngle);ctx.fillStyle='#0984e3';
+  ctx.fillRect(-PLAYER_SIZE/2,-PLAYER_SIZE/2,PLAYER_SIZE,PLAYER_SIZE);ctx.restore();
 
-  // Draw tank body
-  ctx.save();
-  ctx.translate(player.x,player.y);
-  ctx.rotate(player.bodyAngle);
-  ctx.fillStyle='#0984e3';
-  ctx.fillRect(-PLAYER_SIZE/2,-PLAYER_SIZE/2,PLAYER_SIZE,PLAYER_SIZE);
-  ctx.restore();
+  ctx.save();ctx.translate(player.x,player.y);ctx.rotate(player.turretAngle);ctx.fillStyle='#dfe6e9';
+  ctx.fillRect(0,-3,PLAYER_SIZE/2,6);ctx.restore();
 
-  // Draw turret (independent)
-  ctx.save();
-  ctx.translate(player.x,player.y);
-  ctx.rotate(player.turretAngle);
-  ctx.fillStyle='#dfe6e9';
-  ctx.fillRect(0,-3,PLAYER_SIZE/2,6);
-  ctx.restore();
+  ctx.fillStyle='#f4d03f';bullets.forEach(b=>{ctx.beginPath();ctx.arc(b.x,b.y,BULLET_RADIUS,0,Math.PI*2);ctx.fill();});
+  ctx.fillStyle='#e74c3c';enemies.forEach(e=>ctx.fillRect(e.x,e.y,ENEMY_SIZE,ENEMY_SIZE));
 
-  // Bullets
-  ctx.fillStyle='#f4d03f';
-  bullets.forEach(b=>{ctx.beginPath(); ctx.arc(b.x,b.y,BULLET_RADIUS,0,Math.PI*2); ctx.fill();});
-
-  // Enemies
-  ctx.fillStyle='#e74c3c';
-  enemies.forEach(e=>ctx.fillRect(e.x,e.y,ENEMY_SIZE,ENEMY_SIZE));
-
-  // HUD
-  ctx.fillStyle='#fafafa'; ctx.font='16px monospace';
-  ctx.fillText(`Score: ${score}`,10,20);
-  const rem=Math.max(0,GAME_DURATION-(performance.now()-startTime));
-  ctx.fillText(`Time: ${Math.ceil(rem/1000)}s`,canvas.width-100,20);
+  ctx.fillStyle='#fafafa';ctx.font='16px monospace';ctx.fillText(`Score: ${score}`,10,20);
+  const t=Math.max(0,GAME_DURATION-(performance.now()-startTime));ctx.fillText(`Time: ${Math.ceil(t/1000)}s`,canvas.width-100,20);
 }
 
-function gameLoop(){ update(); draw(); animationId=requestAnimationFrame(gameLoop); }
+function gameLoop(){animationId=requestAnimationFrame(gameLoop);update();draw();}
 
-/* ——————————————————— End‑game & Scoreboard ——————————————————— */
-function endGame(won){
+function endGame(done){
   cancelAnimationFrame(animationId);
-  saveScore();
-  buildScoreboard();
-  overlay.innerHTML=`<h1>${won?"Mission Complete!":"Tank Destroyed"}</h1><p>Your score: ${score}</p>`;
-  overlay.appendChild(boardWrap);
-  const btn=document.createElement('button'); btn.textContent='Play Again'; overlay.appendChild(btn);
-  btn.addEventListener('click',beginGame);
+  saveScore(SCORE_SLOT,score);
+  const best=getScore(SCORE_SLOT);
+  overlay.innerHTML=`<h1>${done?'Mission Complete!':'Tank Destroyed'}</h1>
+                     <p>Your score: ${score}</p><p>High Score: ${best}</p>
+                     <button id="playAgain">Play Again</button>`;
   overlay.style.display='flex';
-}
-
-function saveScore(){
-  const top=JSON.parse(localStorage.getItem('tb_scores')||'[]');
-  top.push({s:score,d:new Date().toLocaleDateString()});
-  top.sort((a,b)=>b.s-a.s);
-  if(top.length>MAX_SCORES) top.length=MAX_SCORES;
-  localStorage.setItem('tb_scores',JSON.stringify(top));
-}
-
-function buildScoreboard(){
-  const list=JSON.parse(localStorage.getItem('tb_scores')||'[]');
-  boardList.innerHTML=list.length?list.map((e,i)=>`<li>#${i+1} – ${e.s}</li>`).join(''):'<li>No scores yet</li>';
-  boardWrap.style.display='block';
+  overlay.querySelector('#playAgain').addEventListener('click',()=>location.reload());
 }
 </script>
 </body>
