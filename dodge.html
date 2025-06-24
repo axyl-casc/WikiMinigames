@@ -207,7 +207,7 @@
       // HUD
       ctx.fillStyle = "#fafafa";
       ctx.font = "16px monospace";
-      ctx.fillText(`Score: ${score}`, 10, 20);
+      ctx.fillText(`High Score: ${getScore(1)} Score: ${score}`, 10, 20);
 
       const remaining = Math.max(0, GAME_DURATION - (performance.now() - startTime));
       ctx.fillText(`Time: ${Math.ceil(remaining / 1000)}s`, canvas.width - 100, 20);
@@ -234,7 +234,8 @@
     function endGame(completed) {
       cancelAnimationFrame(animationId);
       if(completed) {
-        saveScore(1, score + 10);
+        score += 10;
+        saveScore(1, score);
       } else {
         saveScore(1, score);
       }

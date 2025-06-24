@@ -84,7 +84,7 @@ function draw(){
   ctx.fillStyle='#f4d03f';bullets.forEach(b=>{ctx.beginPath();ctx.arc(b.x,b.y,BULLET_RADIUS,0,Math.PI*2);ctx.fill();});
   ctx.fillStyle='#e74c3c';enemies.forEach(e=>ctx.fillRect(e.x,e.y,ENEMY_SIZE,ENEMY_SIZE));
 
-  ctx.fillStyle='#fafafa';ctx.font='16px monospace';ctx.fillText(`Score: ${score}`,10,20);
+  ctx.fillStyle='#fafafa';ctx.font='16px monospace';ctx.fillText(`High Score: ${getScore(SCORE_SLOT)} Score: ${score}`,10,20);
   const t=Math.max(0,GAME_DURATION-(performance.now()-startTime));ctx.fillText(`Time: ${Math.ceil(t/1000)}s`,canvas.width-100,20);
 }
 
@@ -93,7 +93,8 @@ function gameLoop(){animationId=requestAnimationFrame(gameLoop);update();draw();
 function endGame(done){
   cancelAnimationFrame(animationId);
   if(done){
-    saveScore(SCORE_SLOT,score + 10);
+    score += 10;
+    saveScore(SCORE_SLOT,score);
   } else {
     saveScore(SCORE_SLOT,score);
   }
