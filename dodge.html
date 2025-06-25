@@ -58,7 +58,7 @@
 <body>
   <div id="overlay">
     <h1>🤖 Robot Blaster</h1>
-    <p>Use ← → to move<br>Press Space to shoot<br>Survive 30 seconds!</p>
+    <p>Use A / D to move<br>Press Space to shoot<br>Survive 30 seconds!</p>
     <button id="startBtn">Start Game</button>
   </div>
 
@@ -119,11 +119,11 @@
     document.addEventListener("keydown", e => {
       keys[e.code] = true;
 
-      // Prevent default arrow-key scrolling
-      if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Space"].includes(e.code)) {
+      // Prevent default when using space to shoot
+      if (e.code === "Space") {
         e.preventDefault();
+        shoot();
       }
-      if (e.code === "Space") shoot();
     });
 
     document.addEventListener("keyup", e => {
@@ -149,8 +149,8 @@
 
     function update() {
       /* Move player */
-      if (keys["ArrowLeft"])  player.x -= PLAYER_SPEED;
-      if (keys["ArrowRight"]) player.x += PLAYER_SPEED;
+      if (keys["KeyA"]) player.x -= PLAYER_SPEED;
+      if (keys["KeyD"]) player.x += PLAYER_SPEED;
 
       // Clamp to canvas
       player.x = Math.max(0, Math.min(canvas.width - PLAYER_SIZE, player.x));
