@@ -233,16 +233,15 @@
     /* ----------------------  End-game UI  ----------------------- */
     function endGame(completed) {
       cancelAnimationFrame(animationId);
-      if(completed) {
+      if (completed) {
         score += 10;
-        saveScore(1, score);
-      } else {
-        saveScore(1, score);
       }
+      saveScore(1, score);
+      const best = getScore(1);
       overlay.innerHTML = `
         <h1>${completed ? "Great Job! +10 to score!" : "Game Over"}</h1>
         <p>Your score: ${score}</p>
-        <p>High Score: ${getScore(1)}</p>
+        <p>High Score: ${best}</p>
         <button id="playAgain">Play Again</button>
       `;
       overlay.style.display = "flex";
