@@ -54,7 +54,8 @@ function spawnEnemy(){const edge=Math.floor(Math.random()*4);let x,y;if(edge===0
  enemies.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s});}
 
 function update(){
-  if(keys.KeyA)player.bodyAngle-=ROTATE_SPEED;if(keys.KeyD)player.bodyAngle+=ROTATE_SPEED;
+  if(keys.KeyA){player.bodyAngle-=ROTATE_SPEED;player.turretAngle-=ROTATE_SPEED;}
+  if(keys.KeyD){player.bodyAngle+=ROTATE_SPEED;player.turretAngle+=ROTATE_SPEED;}
   if(keys.KeyQ)player.turretAngle-=TURRET_ROTATE_SPEED;if(keys.KeyE)player.turretAngle+=TURRET_ROTATE_SPEED;
   const fx=Math.cos(player.bodyAngle),fy=Math.sin(player.bodyAngle);if(keys.KeyW){player.x+=fx*MOVE_SPEED;player.y+=fy*MOVE_SPEED;}
   if(keys.KeyS){player.x-=fx*MOVE_SPEED;player.y-=fy*MOVE_SPEED;}
