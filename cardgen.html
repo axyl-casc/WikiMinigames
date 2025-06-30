@@ -56,15 +56,11 @@
     button:hover {
       transform: translateY(-2px);
     }
-    #preview-btn {
-      background: #2563eb;
-      color: #fff;
-      margin-right: 0.5rem;
-    }
+    /* Preview button removed */
     #download-btn {
       background: #10b981;
       color: #fff;
-      display: none;
+      display: inline-block;
     }
   </style>
 
@@ -83,7 +79,6 @@
     </div>
   </div>
 
-  <button id="preview-btn">Preview Card</button>
   <button id="download-btn">Download PNG</button>
 
   <script>
@@ -123,11 +118,9 @@
       document.getElementById("card").style.borderColor = borderColor;
     }
 
-    // ── Button handlers ───────────────────────────────
-    document.getElementById("preview-btn").addEventListener("click", () => {
-      buildCard();
-      document.getElementById("download-btn").style.display = "inline-block";
-    });
+    // ── Initialize and periodic updates ───────────────
+    buildCard();
+    setInterval(buildCard, 60000); // update every minute
 
     document.getElementById("download-btn").addEventListener("click", () => {
       html2canvas(document.getElementById("card"), { scale: 2 }).then((canvas) => {
