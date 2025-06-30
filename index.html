@@ -35,29 +35,26 @@
       border-radius:16px;
       text-align:center;
       transition:transform .2s, background .2s;
+      border:none;
+      cursor:pointer;
+      color:var(--text);
+      font-size:1.25rem;
+      font-weight:bold;
     }
     .game-card:hover{
       transform:translateY(-4px);
       background:var(--accent);
-    }
-    .game-card a{
-      color:var(--text);
-      text-decoration:none;
-      font-size:1.25rem;
-      font-weight:bold;
-      display:block;
     }
   </style>
 </head>
 <body>
   <h1>🎮 Minigame Selector</h1>
   <div class="link-grid">
-    <div class="game-card">
-      <a href="dodge.html">🌀 Dodge Game</a>
-    </div>
-    <div class="game-card">
-      <a href="tank.html">🛡️ Tank Game</a>
-    </div>
+    <button class="game-card" onclick="location.href='dodge.html'">🌀 Dodge Game</button>
+    <button class="game-card" onclick="location.href='tank.html'">🛡️ Tank Game</button>
+    <button class="game-card" onclick="location.href='cardgen.html'">📇 Player-Card Generator</button>
+    <button class="game-card" onclick="location.href='datatypesquiz.html'">❓ Data-Types Quiz</button>
+    <button class="game-card" onclick="location.href='checklist.html'">✅ Robocode Progress</button>
   </div>
 </body>
 </html>
