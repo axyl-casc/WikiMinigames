@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>🤖 Robocode Progress</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f0f4f8;
+            padding: 1rem;
+        }
+
+        h1,
+        h2 {
+            text-align: center;
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .tab-btn {
+            background: #ddd;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .tab-btn.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: auto;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        label {
+            display: block;
+            margin: 0.5rem 0;
+        }
+
+        .progress {
+            font-weight: bold;
+            margin: 1rem 0;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="shared.js"></script>
+    <h1>🤖 Robocode Progress</h1>
+    <div class="tabs" id="tabs"></div>
+    <div id="global-progress" class="progress"></div>
+    <div id="content"></div>
+
+    <script>
+        const days = {
+            "Day 1": [
+                "Installed Java and Robocode",
+                "Ran a Hello World program",
+                "Explored the Robocode arena",
+                "Found MyFirstBot in the bots folder"
+            ],
+            "Day 2": [
+                "Wrote a robot class with run()",
+                "Used movement methods like forward()",
+                "Watched your bot in action"
+            ],
+            "Day 3": [
+                "Declared int, double, String variables",
+                "Tracked energy or direction",
+                "Named your bot",
+                "Sketched a circle with 0, 90, 180, 270 degrees"
+            ],
+            "Day 4": [
+                "Used onScannedRobot() or onHitByBullet()",
+                "Printed values with System.out.println",
+                "Used printouts to debug",
+                "Learned from a bug"
+            ],
+            "Day 5": [
+                "Used if, else, or switch",
+                "Created a loop",
+                "Made your bot adapt",
+                "Gave or got feedback"
+            ],
+            "Day 6": [
+                "Created a helper method",
+                "Organized your code",
+                "Used method names with purpose"
+            ],
+            "Day 7": [
+                "Used try/catch",
+                "Solved a bug",
+                "Helped a classmate debug"
+            ],
+            "Day 8": [
+                "Drew a flowchart",
+                "Picked a strategy",
+                "Made bot react to events"
+            ],
+            "Day 9": [
+                "Finished a tournament-ready bot",
+                "Helped a peer",
+                "Shared a preview"
+            ],
+            "Day 10": [
+                "Entered the tournament",
+                "Gave kind feedback",
+                "Wrote a reflection"
+            ]
+        };
+
+        const tabs = document.getElementById("tabs");
+        const content = document.getElementById("content");
+        const globalProgress = document.getElementById("global-progress");
+
+        function saveCheck(day, index, checked) {
+            localStorage.setItem(`robocode_day_${day}_item_${index}`, checked);
+        }
+
+        function loadCheck(day, index) {
+            return localStorage.getItem(`robocode_day_${day}_item_${index}`) === "true";
+        }
+
+        function saveActiveDay(dayName) {
+            localStorage.setItem("robocode_active_day", dayName);
+        }
+
+        function getActiveDay() {
+            return localStorage.getItem("robocode_active_day") || Object.keys(days)[0];
+        }
+
+        function updateGlobalProgress() {
+            let completed = 0;
+            let total = 0;
+            for (const [day, tasks] of Object.entries(days)) {
+                tasks.forEach((_, i) => {
+                    if (loadCheck(day, i)) completed++;
+                    total++;
+                });
+            }
+
+            saveScore(4, completed);
+            globalProgress.textContent = `🌍 Total Progress: ${completed} / ${total} tasks completed`;
+        }
+
+        function updateDailyProgress(dayName) {
+            const container = document.getElementById(`tab-${dayName}`);
+            const checks = container.querySelectorAll("input[type=checkbox]");
+            const checked = Array.from(checks).filter(c => c.checked).length;
+            const label = container.querySelector(".progress-label");
+            label.textContent = `📊 ${checked} / ${checks.length} tasks completed today`;
+        }
+
+        function showTab(dayName) {
+            document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+            document.querySelector(`.tab-btn[data-day="${dayName}"]`).classList.add("active");
+            document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+            document.getElementById(`tab-${dayName}`).classList.add("active");
+            saveActiveDay(dayName);
+            updateDailyProgress(dayName);
+        }
+
+        // Create buttons and content for each day
+        for (const day in days) {
+            const btn = document.createElement("button");
+            btn.textContent = day;
+            btn.className = "tab-btn";
+            btn.dataset.day = day;
+            btn.onclick = () => {
+                showTab(day);
+            };
+            tabs.appendChild(btn);
+
+            const div = document.createElement("div");
+            div.className = "tab-content";
+            div.id = `tab-${day}`;
+
+            const label = document.createElement("div");
+            label.className = "progress-label progress";
+            div.appendChild(label);
+
+            days[day].forEach((item, i) => {
+                const wrapper = document.createElement("label");
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.checked = loadCheck(day, i);
+                checkbox.onchange = () => {
+                    saveCheck(day, i, checkbox.checked);
+                    updateDailyProgress(day);
+                    updateGlobalProgress();
+                };
+                wrapper.appendChild(checkbox);
+                wrapper.append(" " + item);
+                div.appendChild(wrapper);
+            });
+
+            content.appendChild(div);
+        }
+
+        // Show the last active tab on load
+        const initialDay = getActiveDay();
+        showTab(initialDay);
+        updateGlobalProgress();
+    </script>
+</body>
+
+</html>
