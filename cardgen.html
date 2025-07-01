@@ -72,8 +72,14 @@
 <body>
   <h1>Robot Player-Card Generator</h1>
 
+  <div style="margin-bottom:1rem;">
+    <label for="tank-upload">Upload your tank image:</label>
+    <input id="tank-upload" type="file" accept="image/*" />
+  </div>
+
   <div class="preview-wrapper">
-    <div id="card" class="card">
+    <div id="card" class="card" style="display:none;">
+      <img id="tank-image" src="" alt="Tank preview" style="width:100%;border-radius:0.5rem;margin-bottom:0.5rem;display:none;" />
       <h2 id="robot-name">My Awesome Bot</h2>
       <div class="stats" id="stats"><!-- Injected here --></div>
     </div>
@@ -119,8 +125,26 @@
     }
 
     // ── Initialize and periodic updates ───────────────
-    buildCard();
-    setInterval(buildCard, 60000); // update every minute
+    const uploadEl = document.getElementById("tank-upload");
+    const imgEl = document.getElementById("tank-image");
+    const cardEl = document.getElementById("card");
+    let intervalId = null;
+
+    uploadEl.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        imgEl.src = ev.target.result;
+        imgEl.style.display = "block";
+        cardEl.style.display = "block";
+        buildCard();
+        if (!intervalId) {
+          intervalId = setInterval(buildCard, 60000);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
 
     document.getElementById("download-btn").addEventListener("click", () => {
       html2canvas(document.getElementById("card"), { scale: 2 }).then((canvas) => {
