@@ -79,19 +79,24 @@
 <body>
   <h1>Robot Player-Card Generator</h1>
 
-  <div style="margin-bottom:1rem;">
-    <label for="tank-upload">Upload your tank image:</label>
-    <input id="tank-upload" type="file" accept="image/*" />
-  </div>
-
-  <div class="preview-wrapper">
-    <div id="card" class="card" style="display:none;">
-      <img id="tank-image" src="" alt="Tank preview" style="width:100%;border-radius:0.5rem;margin-bottom:0.5rem;display:none;" />
-      <div id="star-rating" class="stars"></div>
-      <h2 id="robot-name">My Awesome Bot</h2>
-      <div class="stats" id="stats"><!-- Injected here --></div>
+    <div style="margin-bottom:1rem;">
+      <label for="tank-upload">Upload your tank image:</label>
+      <input id="tank-upload" type="file" accept="image/*" />
     </div>
-  </div>
+
+    <div style="margin-bottom:1rem;">
+      <label for="code-input">Card code:</label>
+      <input id="code-input" type="text" />
+    </div>
+
+    <div class="preview-wrapper">
+      <div id="card" class="card" style="display:none;">
+        <div id="star-rating" class="stars"></div>
+        <img id="tank-image" src="" alt="Tank preview" style="width:100%;border-radius:0.5rem;margin-bottom:0.5rem;display:none;" />
+        <h2 id="robot-name">My Awesome Bot</h2>
+        <div class="stats" id="stats"><!-- Injected here --></div>
+      </div>
+    </div>
 
   <button id="download-btn">Download PNG</button>
 
@@ -106,6 +111,16 @@
     const GAME_IDS = [1, 2, 3, 4];
     const MAX_SCORES = {1: 50, 2: 50, 3: 50, 4: 4};
     const MAX_TOTAL = Object.values(MAX_SCORES).reduce((a, b) => a + b, 0);
+    let codeBonus = 0;
+
+    function updateCodeBonus() {
+      const code = document.getElementById("code-input").value.trim();
+      if (/^\d.*[abc]$/.test(code)) {
+        codeBonus = (code.match(/%/g) || []).length;
+      } else {
+        codeBonus = 0;
+      }
+    }
 
     /** Utility: builds a single stat line */
     function statLine(label, value) {
@@ -128,8 +143,10 @@
       });
       statsEl.appendChild(statLine("<strong>Total</strong>", `<strong>${total}</strong>`));
 
-      const starCount = Math.round((total / MAX_TOTAL) * 12);
-      starEl.textContent = "★".repeat(starCount) + "☆".repeat(12 - starCount);
+      updateCodeBonus();
+      const scoreForStars = total + codeBonus;
+      const starCount = Math.min(12, Math.round((scoreForStars / MAX_TOTAL) * 12));
+      starEl.textContent = "★".repeat(starCount);
 
       // Color theme — map total score (0-400) onto hue (0-120)
       const hue = Math.max(0, Math.min(120, total));
@@ -142,6 +159,11 @@
     const uploadEl = document.getElementById("tank-upload");
     const imgEl = document.getElementById("tank-image");
     const cardEl = document.getElementById("card");
+    const codeInputEl = document.getElementById("code-input");
+    codeInputEl.addEventListener("input", () => {
+      updateCodeBonus();
+      buildCard();
+    });
     let intervalId = null;
 
     uploadEl.addEventListener("change", (e) => {
