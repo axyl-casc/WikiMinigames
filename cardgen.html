@@ -80,13 +80,15 @@
   <h1>Robot Player-Card Generator</h1>
 
     <div style="margin-bottom:1rem;">
-      <label for="tank-upload">Upload your tank image:</label>
-      <input id="tank-upload" type="file" accept="image/*" />
+      <label for="tank-upload">Tank image:</label>
+      <input id="tank-upload" type="file" accept="image/*" style="display:none;" />
+      <button id="edit-image-btn" type="button">Edit Image</button>
     </div>
 
     <div style="margin-bottom:1rem;">
-      <label for="json-upload">Upload robot JSON:</label>
-      <input id="json-upload" type="file" accept="application/json" />
+      <label for="json-upload">Robot JSON:</label>
+      <input id="json-upload" type="file" accept="application/json" style="display:none;" />
+      <button id="edit-json-btn" type="button">Edit JSON</button>
     </div>
 
     <div style="margin-bottom:1rem;">
@@ -190,11 +192,36 @@
     const imgEl = document.getElementById("tank-image");
     const cardEl = document.getElementById("card");
     const codeInputEl = document.getElementById("code-input");
+    const editImgBtn = document.getElementById("edit-image-btn");
+    const editJsonBtn = document.getElementById("edit-json-btn");
+
     codeInputEl.addEventListener("input", () => {
       updateCodeBonus();
       buildCard();
     });
     let intervalId = null;
+
+    editImgBtn.addEventListener("click", () => uploadEl.click());
+    editJsonBtn.addEventListener("click", () => jsonUploadEl.click());
+
+    function loadStoredData() {
+      const storedImg = localStorage.getItem("robotCard:image");
+      const storedJson = localStorage.getItem("robotCard:json");
+      if (storedImg) {
+        imgEl.src = storedImg;
+        imgEl.style.display = "block";
+        cardEl.style.display = "block";
+      }
+      if (storedJson) {
+        try { robotInfo = JSON.parse(storedJson); } catch {}
+      }
+      if (storedImg || storedJson) {
+        buildCard();
+        if (!intervalId) intervalId = setInterval(buildCard, 60000);
+      }
+    }
+
+    loadStoredData();
 
     uploadEl.addEventListener("change", (e) => {
       const file = e.target.files[0];
@@ -204,6 +231,7 @@
         imgEl.src = ev.target.result;
         imgEl.style.display = "block";
         cardEl.style.display = "block";
+        localStorage.setItem("robotCard:image", ev.target.result);
         buildCard();
         if (!intervalId) {
           intervalId = setInterval(buildCard, 60000);
@@ -219,6 +247,7 @@
       reader.onload = (ev) => {
         try {
           robotInfo = JSON.parse(ev.target.result);
+          localStorage.setItem("robotCard:json", ev.target.result);
         } catch (err) {
           alert("Invalid JSON file");
           robotInfo = null;
