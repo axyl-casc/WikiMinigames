@@ -37,11 +37,18 @@
       word-break: break-word;
     }
 
-    .stats p {
-      display: flex;
-      justify-content: space-between;
-      margin: 0.15rem 0;
-    }
+      .stats p {
+        display: flex;
+        justify-content: space-between;
+        margin: 0.15rem 0;
+      }
+
+      .stars {
+        text-align: center;
+        color: #f1c40f;
+        font-size: 1.25rem;
+        margin-bottom: 0.25rem;
+      }
 
     /* ── Buttons ────────────────────────────────────── */
     button {
@@ -80,6 +87,7 @@
   <div class="preview-wrapper">
     <div id="card" class="card" style="display:none;">
       <img id="tank-image" src="" alt="Tank preview" style="width:100%;border-radius:0.5rem;margin-bottom:0.5rem;display:none;" />
+      <div id="star-rating" class="stars"></div>
       <h2 id="robot-name">My Awesome Bot</h2>
       <div class="stats" id="stats"><!-- Injected here --></div>
     </div>
@@ -96,6 +104,8 @@
     */
 
     const GAME_IDS = [1, 2, 3, 4];
+    const MAX_SCORES = {1: 50, 2: 50, 3: 50, 4: 4};
+    const MAX_TOTAL = Object.values(MAX_SCORES).reduce((a, b) => a + b, 0);
 
     /** Utility: builds a single stat line */
     function statLine(label, value) {
@@ -107,6 +117,7 @@
     /** Populates the card with current scores */
     function buildCard() {
       const statsEl = document.getElementById("stats");
+      const starEl = document.getElementById("star-rating");
       statsEl.innerHTML = ""; // Clear previous
 
       let total = 0;
@@ -116,6 +127,9 @@
         statsEl.appendChild(statLine(`Game ${id}`, score));
       });
       statsEl.appendChild(statLine("<strong>Total</strong>", `<strong>${total}</strong>`));
+
+      const starCount = Math.round((total / MAX_TOTAL) * 12);
+      starEl.textContent = "★".repeat(starCount) + "☆".repeat(12 - starCount);
 
       // Color theme — map total score (0-400) onto hue (0-120)
       const hue = Math.max(0, Math.min(120, total));
