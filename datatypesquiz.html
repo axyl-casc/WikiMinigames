@@ -109,7 +109,7 @@
             questions.forEach(q => {
                 const id = q.dataset.id;
                 const input = q.querySelector("input");
-                const userAnswer = input.value.trim().toLowerCase();
+                const userAnswer = input.value.trim();
                 const rightAnswer = answerKey[id];
                 const isCorrect = userAnswer === rightAnswer;
 
