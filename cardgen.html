@@ -85,6 +85,11 @@
     </div>
 
     <div style="margin-bottom:1rem;">
+      <label for="json-upload">Upload robot JSON:</label>
+      <input id="json-upload" type="file" accept="application/json" />
+    </div>
+
+    <div style="margin-bottom:1rem;">
       <label for="code-input">Card code:</label>
       <input id="code-input" type="text" />
     </div>
@@ -94,6 +99,7 @@
         <div id="star-rating" class="stars"></div>
         <img id="tank-image" src="" alt="Tank preview" style="width:100%;border-radius:0.5rem;margin-bottom:0.5rem;display:none;" />
         <h2 id="robot-name">My Awesome Bot</h2>
+        <div id="robot-meta" style="font-size:0.85rem;margin-bottom:0.5rem;display:none;"></div>
         <div class="stats" id="stats"><!-- Injected here --></div>
       </div>
     </div>
@@ -112,6 +118,7 @@
     const MAX_SCORES = {1: 50, 2: 50, 3: 50, 4: 4};
     const MAX_TOTAL = Object.values(MAX_SCORES).reduce((a, b) => a + b, 0);
     let codeBonus = 0;
+    let robotInfo = null;
 
     function updateCodeBonus() {
       const code = document.getElementById("code-input").value.trim();
@@ -129,11 +136,33 @@
       return p;
     }
 
+    function renderRobotMeta() {
+      const metaEl = document.getElementById("robot-meta");
+      if (!robotInfo) {
+        metaEl.style.display = "none";
+        metaEl.innerHTML = "";
+        return;
+      }
+      metaEl.style.display = "block";
+      const lines = [];
+      if (robotInfo.version) lines.push(`<strong>Version:</strong> ${robotInfo.version}`);
+      if (robotInfo.authors) lines.push(`<strong>Authors:</strong> ${robotInfo.authors.join(', ')}`);
+      if (robotInfo.description) lines.push(robotInfo.description);
+      if (robotInfo.homepage) lines.push(`<strong>Homepage:</strong> <a href='${robotInfo.homepage}' target='_blank'>${robotInfo.homepage}</a>`);
+      if (robotInfo.countryCodes) lines.push(`<strong>Country:</strong> ${robotInfo.countryCodes.join(', ').toUpperCase()}`);
+      if (robotInfo.platform) lines.push(`<strong>Platform:</strong> ${robotInfo.platform}`);
+      if (robotInfo.programmingLang) lines.push(`<strong>Language:</strong> ${robotInfo.programmingLang}`);
+      metaEl.innerHTML = lines.map(l => `<p>${l}</p>`).join('');
+      document.getElementById("robot-name").textContent = robotInfo.name || "My Awesome Bot";
+    }
+
     /** Populates the card with current scores */
-    function buildCard() {
-      const statsEl = document.getElementById("stats");
-      const starEl = document.getElementById("star-rating");
-      statsEl.innerHTML = ""; // Clear previous
+   function buildCard() {
+     const statsEl = document.getElementById("stats");
+     const starEl = document.getElementById("star-rating");
+     statsEl.innerHTML = ""; // Clear previous
+
+      renderRobotMeta();
 
       let total = 0;
       GAME_IDS.forEach((id) => {
@@ -157,6 +186,7 @@
 
     // ── Initialize and periodic updates ───────────────
     const uploadEl = document.getElementById("tank-upload");
+    const jsonUploadEl = document.getElementById("json-upload");
     const imgEl = document.getElementById("tank-image");
     const cardEl = document.getElementById("card");
     const codeInputEl = document.getElementById("code-input");
@@ -180,6 +210,26 @@
         }
       };
       reader.readAsDataURL(file);
+    });
+
+    jsonUploadEl.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          robotInfo = JSON.parse(ev.target.result);
+        } catch (err) {
+          alert("Invalid JSON file");
+          robotInfo = null;
+        }
+        cardEl.style.display = "block";
+        buildCard();
+        if (!intervalId) {
+          intervalId = setInterval(buildCard, 60000);
+        }
+      };
+      reader.readAsText(file);
     });
 
     document.getElementById("download-btn").addEventListener("click", () => {
