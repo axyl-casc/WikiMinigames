@@ -56,11 +56,13 @@ function buildCard() {
 window.addEventListener('DOMContentLoaded', () => {
   const uploadEl = document.getElementById("tank-upload");
   const jsonUploadEl = document.getElementById("json-upload");
+  const scoreSheetUploadEl = document.getElementById("scoresheet-upload");
   const imgEl = document.getElementById("tank-image");
   const cardEl = document.getElementById("card");
   const codeInputEl = document.getElementById("code-input");
   const editImgBtn = document.getElementById("edit-image-btn");
   const editJsonBtn = document.getElementById("edit-json-btn");
+  const editSheetBtn = document.getElementById("edit-scoresheet-btn");
 
   codeInputEl.addEventListener("input", () => {
     updateCodeBonus();
@@ -69,6 +71,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   editImgBtn.addEventListener("click", () => uploadEl.click());
   editJsonBtn.addEventListener("click", () => jsonUploadEl.click());
+  editSheetBtn.addEventListener("click", () => scoreSheetUploadEl.click());
 
   uploadEl.addEventListener("change", (e) => {
     const file = e.target.files[0];
@@ -100,6 +103,20 @@ window.addEventListener('DOMContentLoaded', () => {
         window.robotInfo = null;
       }
       cardEl.style.display = "block";
+      buildCard();
+      if (!window.intervalId) {
+        window.intervalId = setInterval(buildCard, 60000);
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  scoreSheetUploadEl.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      saveScoreSheet(ev.target.result);
       buildCard();
       if (!window.intervalId) {
         window.intervalId = setInterval(buildCard, 60000);
