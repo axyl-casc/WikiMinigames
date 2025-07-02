@@ -72,6 +72,12 @@
       color: #fff;
       display: inline-block;
     }
+
+    #update-btn {
+      background: #3b82f6;
+      color: #fff;
+      margin-right: 0.5rem;
+    }
   </style>
 
   <!-- html2canvas for PNG download -->
@@ -112,6 +118,7 @@
     </div>
   </div>
 
+  <button id="update-btn">Update Card</button>
   <button id="download-btn">Download PNG</button>
 
   <script>
@@ -324,6 +331,27 @@
       };
       reader.readAsText(file);
     });
+
+    function updateCardFromStorage() {
+      const storedImg = localStorage.getItem("robotCard:image");
+      const storedJson = localStorage.getItem("robotCard:json");
+      if (storedImg && storedImg !== imgEl.src) {
+        imgEl.src = storedImg;
+        imgEl.style.display = "block";
+        cardEl.style.display = "block";
+      }
+      if (storedJson) {
+        try {
+          const parsed = JSON.parse(storedJson);
+          if (JSON.stringify(parsed) !== JSON.stringify(robotInfo)) {
+            robotInfo = parsed;
+          }
+        } catch {}
+      }
+      buildCard();
+    }
+
+    document.getElementById("update-btn").addEventListener("click", updateCardFromStorage);
 
     document.getElementById("download-btn").addEventListener("click", () => {
       html2canvas(document.getElementById("card"), { scale: 2 }).then((canvas) => {
