@@ -104,6 +104,7 @@
         <div id="robot-meta" style="font-size:0.85rem;margin-bottom:0.5rem;display:none;"></div>
         <div class="stats" id="stats"><!-- Injected here --></div>
       </div>
+      <div id="description-card" style="margin-top:1rem;"></div>
     </div>
 
   <button id="download-btn">Download PNG</button>
@@ -115,6 +116,69 @@
         - hslToRgb(h, s, l)         → [r, g, b]
         - rgbToHsl(r, g, b)         → [h, s, l]
     */
+
+    function generateBotDescription(botData) {
+      const countryEmojiMap = {
+        us: "\uD83C\uDDFA\uD83C\uDDF8",
+        dk: "\uD83C\uDDE9\uD83C\uDDF0",
+        ca: "\uD83C\uDDE8\uD83C\uDDE6",
+        gb: "\uD83C\uDDEC\uD83C\uDDE7",
+        de: "\uD83C\uDDE9\uD83C\uDDEA",
+        fr: "\uD83C\uDDEB\uD83C\uDDF7",
+        jp: "\uD83C\uDDEF\uD83C\uDDF5",
+        cn: "\uD83C\uDDE8\uD83C\uDDF3",
+        in: "\uD83C\uDDEE\uD83C\uDDF3",
+        kr: "\uD83C\uDDF0\uD83C\uDDF7",
+        br: "\uD83C\uDDE7\uD83C\uDDF7",
+        se: "\uD83C\uDDF8\uD83C\uDDEA"
+      };
+
+      const languageEmojiMap = {
+        "Java": "\u2615",
+        "Java 11": "\u2615",
+        "C": "\uD83D\uDCBE",
+        "C++": "\uD83D\uDCBB",
+        "Python": "\uD83D\uDC0D",
+        "Python 3": "\uD83D\uDC0D"
+      };
+
+      const {
+        name,
+        version,
+        authors = [],
+        description = "",
+        homepage = "",
+        countryCodes = [],
+        platform = "",
+        programmingLang = ""
+      } = botData;
+
+      const flagEmojis = countryCodes.length > 0 ? countryCodes.map(code => countryEmojiMap[code.toLowerCase()] || `\u26f3\uFE0F(${code})`).join(" ") : "";
+      const authorList = authors.length > 0 ? authors.map(name => `<div class="author">\uD83D\uDC64 ${name}</div>`).join("") : "";
+      const languageEmoji = languageEmojiMap[programmingLang] || "\uD83D\uDCA1";
+      const siteLink = homepage ? `<a href="${homepage}" target="_blank">Visit Site</a>` : "";
+
+      return `
+        <div style="
+          background: #fbeec1;
+          border: 4px solid #333;
+          border-radius: 12px;
+          padding: 16px;
+          max-width: 400px;
+          font-family: 'Verdana', sans-serif;
+          box-shadow: 3px 3px 10px rgba(0,0,0,0.3);
+          color: #222;
+        ">
+          <div style="font-size: 1.5em; font-weight: bold;">\uD83E\uDD16 ${name || "Unnamed Bot"} ${version ? `<span style="font-size: 0.7em;">v${version}</span>` : ""}</div>
+          ${flagEmojis ? `<div style="margin: 8px 0;">${flagEmojis}</div>` : ""}
+          ${authorList ? `<div style="margin-bottom: 8px;">${authorList}</div>` : ""}
+          ${description ? `<div style="font-style: italic; margin-bottom: 12px;">${description}</div>` : ""}
+          ${platform ? `<div><strong>\uD83E\uDDE0 Platform:</strong> ${platform}</div>` : ""}
+          ${programmingLang ? `<div><strong>\uD83D\uDCBB Language:</strong> ${languageEmoji} ${programmingLang}</div>` : ""}
+          ${siteLink ? `<div><strong>\uD83C\uDF10 Website:</strong> ${siteLink}</div>` : ""}
+        </div>
+      `;
+    }
 
     const GAME_IDS = [1, 2, 3, 4];
     const MAX_SCORES = {1: 50, 2: 50, 3: 50, 4: 4};
@@ -158,13 +222,23 @@
       document.getElementById("robot-name").textContent = robotInfo.name || "My Awesome Bot";
     }
 
+    function renderBotDescription() {
+      const descEl = document.getElementById("description-card");
+      if (!robotInfo) {
+        descEl.innerHTML = "";
+        return;
+      }
+      descEl.innerHTML = generateBotDescription(robotInfo);
+    }
+
     /** Populates the card with current scores */
    function buildCard() {
      const statsEl = document.getElementById("stats");
      const starEl = document.getElementById("star-rating");
-     statsEl.innerHTML = ""; // Clear previous
+    statsEl.innerHTML = ""; // Clear previous
 
       renderRobotMeta();
+      renderBotDescription();
 
       let total = 0;
       GAME_IDS.forEach((id) => {
