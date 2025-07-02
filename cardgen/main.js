@@ -1,0 +1,110 @@
+// Main logic for the card generator
+const GAME_IDS = [1, 2, 3, 4];
+const MAX_SCORES = { 1: 30, 2: 30, 3: 4, 4: 30 };
+const MAX_TOTAL = Object.values(MAX_SCORES).reduce((a, b) => a + b, 0);
+window.codeBonus = 0;
+window.robotInfo = null;
+window.intervalId = null;
+
+function updateCodeBonus() {
+  const code = document.getElementById("code-input").value.trim();
+  if (/^\d.*[abc]$/.test(code)) {
+    window.codeBonus = (code.match(/%/g) || []).length;
+  } else {
+    window.codeBonus = 0;
+  }
+}
+
+function buildCard() {
+  const statsEl = document.getElementById("stats");
+  const starEl = document.getElementById("star-rating");
+  statsEl.innerHTML = "";
+
+  renderRobotMeta();
+
+  let total = 0;
+  GAME_IDS.forEach((id) => {
+    const score = getScore(id) || 0;
+    total += score;
+  });
+
+  updateCodeBonus();
+  const scoreForStars = total + window.codeBonus;
+  const starCount = Math.min(12, Math.round((scoreForStars / MAX_TOTAL) * 12));
+  starEl.textContent = "★".repeat(starCount);
+
+  const hue = Math.max(0, Math.min(120, total));
+  const [r, g, b] = hslToRgb(hue / 360, 0.65, 0.5);
+  const borderColor = `rgb(${r}, ${g}, ${b})`;
+  document.getElementById("card").style.borderColor = borderColor;
+}
+
+// DOM setup and event bindings
+window.addEventListener('DOMContentLoaded', () => {
+  const uploadEl = document.getElementById("tank-upload");
+  const jsonUploadEl = document.getElementById("json-upload");
+  const imgEl = document.getElementById("tank-image");
+  const cardEl = document.getElementById("card");
+  const codeInputEl = document.getElementById("code-input");
+  const editImgBtn = document.getElementById("edit-image-btn");
+  const editJsonBtn = document.getElementById("edit-json-btn");
+
+  codeInputEl.addEventListener("input", () => {
+    updateCodeBonus();
+    buildCard();
+  });
+
+  editImgBtn.addEventListener("click", () => uploadEl.click());
+  editJsonBtn.addEventListener("click", () => jsonUploadEl.click());
+
+  uploadEl.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      imgEl.src = ev.target.result;
+      imgEl.style.display = "block";
+      cardEl.style.display = "block";
+      localStorage.setItem("robotCard:image", ev.target.result);
+      buildCard();
+      if (!window.intervalId) {
+        window.intervalId = setInterval(buildCard, 60000);
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+
+  jsonUploadEl.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        window.robotInfo = JSON.parse(ev.target.result);
+        localStorage.setItem("robotCard:json", ev.target.result);
+      } catch (err) {
+        alert("Invalid JSON file");
+        window.robotInfo = null;
+      }
+      cardEl.style.display = "block";
+      buildCard();
+      if (!window.intervalId) {
+        window.intervalId = setInterval(buildCard, 60000);
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  document.getElementById("update-btn").addEventListener("click", updateCardFromStorage);
+
+  document.getElementById("download-btn").addEventListener("click", () => {
+    html2canvas(document.getElementById("card"), { scale: 2 }).then((canvas) => {
+      const link = document.createElement("a");
+      link.download = "robot_card.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    });
+  });
+
+  loadStoredData();
+});
