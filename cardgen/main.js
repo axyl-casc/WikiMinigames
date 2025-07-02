@@ -30,7 +30,20 @@ function buildCard() {
 
   updateCodeBonus();
   const scoreForStars = total + window.codeBonus;
-  const starCount = Math.min(12, Math.round((scoreForStars / MAX_TOTAL) * 12));
+
+  let rank = 0;
+  if (window.robotInfo) {
+    try {
+      const sheet = JSON.parse(localStorage.getItem("botScoreSheet") || "[]");
+      const me = sheet.find(
+        (r) => r.name === `${window.robotInfo.name} ${window.robotInfo.version}`
+      );
+      if (me) rank = me.rank || 0;
+    } catch {}
+  }
+
+  const baseStars = Math.min(12, Math.round((scoreForStars / MAX_TOTAL) * 12));
+  const starCount = Math.max(0, baseStars - rank);
   starEl.textContent = "★".repeat(starCount);
 
   const hue = Math.max(0, Math.min(120, total));
