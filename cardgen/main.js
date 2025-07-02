@@ -48,8 +48,13 @@ function buildCard() {
 
   const hue = Math.max(0, Math.min(120, total));
   const [r, g, b] = hslToRgb(hue / 360, 0.65, 0.5);
+  const [r1, g1, b1] = hslToRgb(hue / 360, 0.6, 0.85);
+  const [r2, g2, b2] = hslToRgb(hue / 360, 0.6, 0.35);
   const borderColor = `rgb(${r}, ${g}, ${b})`;
-  document.getElementById("card").style.borderColor = borderColor;
+  const gradient = `linear-gradient(135deg, rgb(${r1}, ${g1}, ${b1}), rgb(${r2}, ${g2}, ${b2}))`;
+  const card = document.getElementById("card");
+  card.style.borderColor = borderColor;
+  card.style.background = gradient;
 }
 
 // DOM setup and event bindings
