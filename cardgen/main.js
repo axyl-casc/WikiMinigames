@@ -47,9 +47,13 @@ function buildCard() {
   starEl.textContent = "★".repeat(starCount);
 
   const hue = Math.max(0, Math.min(120, total));
-  const [r, g, b] = hslToRgb(hue / 360, 0.65, 0.5);
-  const borderColor = `rgb(${r}, ${g}, ${b})`;
-  document.getElementById("card").style.borderColor = borderColor;
+  const [r1, g1, b1] = hslToRgb(hue, 0.65, 0.4);
+  const [r2, g2, b2] = hslToRgb(hue, 0.65, 0.6);
+  const gradient = `linear-gradient(135deg, rgb(${r1}, ${g1}, ${b1}), rgb(${r2}, ${g2}, ${b2}))`;
+  const borderColor = `rgb(${r2}, ${g2}, ${b2})`;
+  const cardEl = document.getElementById("card");
+  cardEl.style.background = gradient;
+  cardEl.style.borderColor = borderColor;
 }
 
 // DOM setup and event bindings
