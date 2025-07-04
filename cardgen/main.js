@@ -5,6 +5,12 @@ const MAX_TOTAL = Object.values(MAX_SCORES).reduce((a, b) => a + b, 0);
 window.codeBonus = 0;
 window.robotInfo = null;
 window.intervalId = null;
+const ROLE_COLORS = {
+  Explorer: [128, 128, 128],
+  Achiever: [0, 128, 128],
+  Competitor: [218, 165, 32],
+  Harmonizer: [0, 128, 0],
+};
 
 function updateCodeBonus() {
   const code = document.getElementById("code-input").value.trim();
@@ -18,6 +24,8 @@ function updateCodeBonus() {
 function buildCard() {
   const statsEl = document.getElementById("stats");
   const starEl = document.getElementById("star-rating");
+  const roleTitleEl = document.getElementById("player-role");
+  const roleSelectEl = document.getElementById("role-select");
   statsEl.innerHTML = "";
 
   renderRobotMeta();
@@ -47,8 +55,20 @@ function buildCard() {
   starEl.textContent = "★".repeat(starCount);
 
   const hue = Math.max(0, Math.min(120, total));
-  const [r1, g1, b1] = hslToRgb(hue, 0.65, 0.4);
-  const [r2, g2, b2] = hslToRgb(hue, 0.65, 0.6);
+  let [r1, g1, b1] = hslToRgb(hue, 0.65, 0.4);
+  let [r2, g2, b2] = hslToRgb(hue, 0.65, 0.6);
+  const role = roleSelectEl.value || "";
+  roleTitleEl.textContent = role;
+  if (ROLE_COLORS[role]) {
+    const [tr, tg, tb] = ROLE_COLORS[role];
+    const mix = (c, t) => Math.round(c * 0.75 + t * 0.25);
+    r1 = mix(r1, tr);
+    g1 = mix(g1, tg);
+    b1 = mix(b1, tb);
+    r2 = mix(r2, tr);
+    g2 = mix(g2, tg);
+    b2 = mix(b2, tb);
+  }
   const gradient = `linear-gradient(135deg, rgb(${r1}, ${g1}, ${b1}), rgb(${r2}, ${g2}, ${b2}))`;
   const borderColor = `rgb(${r2}, ${g2}, ${b2})`;
   const cardEl = document.getElementById("card");
@@ -64,9 +84,16 @@ window.addEventListener('DOMContentLoaded', () => {
   const imgEl = document.getElementById("tank-image");
   const cardEl = document.getElementById("card");
   const codeInputEl = document.getElementById("code-input");
+  const roleSelectEl = document.getElementById("role-select");
   const editImgBtn = document.getElementById("edit-image-btn");
   const editJsonBtn = document.getElementById("edit-json-btn");
   const editSheetBtn = document.getElementById("edit-scoresheet-btn");
+
+  roleSelectEl.value = localStorage.getItem("robotCard:role") || "";
+  roleSelectEl.addEventListener("change", () => {
+    localStorage.setItem("robotCard:role", roleSelectEl.value);
+    buildCard();
+  });
 
   codeInputEl.addEventListener("input", () => {
     updateCodeBonus();
