@@ -111,6 +111,17 @@
     <button id="edit-scoresheet-btn" type="button">Edit Scoresheet</button>
   </div>
 
+  <div style="margin-bottom:1rem;">
+    <label for="role-select">Role:</label>
+    <select id="role-select">
+      <option value="">-- Select --</option>
+      <option value="Explorer">Explorer</option>
+      <option value="Achiever">Achiever</option>
+      <option value="Competitor">Competitor</option>
+      <option value="Harmonizer">Harmonizer</option>
+    </select>
+  </div>
+
   <div style="margin-bottom:1rem; display:none;">
     <label for="code-input">Card code:</label>
     <input id="code-input" type="text" />
@@ -119,6 +130,7 @@
   <div class="preview-wrapper">
     <div id="card" class="card" style="display:none;">
       <div id="star-rating" style="font-size: large;" class="stars"></div>
+      <div id="player-role" class="player-role" style="text-align:center;font-weight:bold;margin-bottom:0.25rem;"></div>
       <img id="tank-image" src="" alt="Tank preview"
         style="width:100%;border-radius:0.5rem;margin-bottom:0.5rem;display:none;" />
       <h2 id="robot-name"></h2>
