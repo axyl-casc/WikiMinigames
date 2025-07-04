@@ -11,6 +11,12 @@ const ROLE_COLORS = {
   Competitor: [218, 165, 32],
   Harmonizer: [0, 128, 0],
 };
+const ROLE_EMOJIS = {
+  Explorer: "✨",
+  Achiever: "🏆",
+  Competitor: "🔥",
+  Harmonizer: "🤝",
+};
 
 function updateCodeBonus() {
   const code = document.getElementById("code-input").value.trim();
@@ -58,7 +64,7 @@ function buildCard() {
   let [r1, g1, b1] = hslToRgb(hue, 0.65, 0.4);
   let [r2, g2, b2] = hslToRgb(hue, 0.65, 0.6);
   const role = roleSelectEl.value || "";
-  roleTitleEl.textContent = role;
+  roleTitleEl.textContent = ROLE_EMOJIS[role] || "";
   if (ROLE_COLORS[role]) {
     const [tr, tg, tb] = ROLE_COLORS[role];
     const mix = (c, t) => Math.round(c * 0.75 + t * 0.25);
