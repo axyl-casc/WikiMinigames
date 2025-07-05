@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Week 1 Review Quiz</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            background: #0e0e0e;
+            color: #fafafa;
+            margin: 0;
+            padding: 2rem 1rem;
+            display: flex;
+            justify-content: center;
+        }
+        main {
+            max-width: 720px;
+            width: 100%;
+            display: grid;
+            gap: 1.25rem;
+        }
+        h1 {
+            font-size: 1.75rem;
+            text-align: center;
+        }
+        .question {
+            background: #111a27;
+            border: 2px solid #2c3e50;
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.35);
+        }
+        input[type="text"] {
+            background: #1c2737;
+            color: #fafafa;
+            border: 1px solid #445469;
+            border-radius: 0.5rem;
+            padding: 0.35rem 0.6rem;
+            width: 180px;
+        }
+        label {
+            display: block;
+            margin: 0.25rem 0;
+        }
+        button {
+            cursor: pointer;
+            background: #1877f2;
+            border: none;
+            border-radius: 0.6rem;
+            padding: 0.55rem 1.4rem;
+            font-size: 1rem;
+            color: #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        .feedback {
+            margin-left: 0.5rem;
+            font-weight: 700;
+        }
+        .correct { color: #4caf50; }
+        .incorrect { color: #ff5252; }
+        #answers {
+            display: none;
+            background: #1c2737;
+            border: 1px solid #445469;
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Week 1 Review Quiz</h1>
+
+        <div class="question" data-id="q1">
+            <p>1. What command compiles a Java program from the terminal after you finish writing it? <input type="text" placeholder="?" /></p>
+        </div>
+
+        <div class="question" data-id="q2">
+            <p>2. Which command do you use to run the compiled Java class? <input type="text" placeholder="?" /></p>
+        </div>
+
+        <div class="question" data-id="q3">
+            <p>3. Write the Java statement that prints “Hello World!” to the screen. <input type="text" placeholder="?" /></p>
+        </div>
+
+        <div class="question" data-id="q4">
+            <p>4. In a Robocode robot, which method is typically the main loop that dictates robot behavior?</p>
+            <label><input type="radio" name="q4" value="run()" /> run()</label>
+            <label><input type="radio" name="q4" value="main()" /> main()</label>
+            <label><input type="radio" name="q4" value="start()" /> start()</label>
+        </div>
+
+        <div class="question" data-id="q5">
+            <p>5. Which event handler method is triggered when your robot detects another robot?</p>
+            <label><input type="radio" name="q5" value="onHitByBullet" /> onHitByBullet</label>
+            <label><input type="radio" name="q5" value="onScannedRobot" /> onScannedRobot</label>
+            <label><input type="radio" name="q5" value="onHitWall" /> onHitWall</label>
+        </div>
+
+        <div class="question" data-id="q6">
+            <p>6. Which Java type would you use to store a decimal value like 3.14 in your robot code? <input type="text" placeholder="?" /></p>
+        </div>
+
+        <div class="question" data-id="q7">
+            <p>7. Name one loop construct in Java that you could use to repeat a block of code.</p>
+            <label><input type="radio" name="q7" value="for" /> for loop</label>
+            <label><input type="radio" name="q7" value="switch" /> switch statement</label>
+            <label><input type="radio" name="q7" value="try" /> try-catch</label>
+        </div>
+
+        <div class="question" data-id="q8">
+            <p>8. What is the purpose of using System.out.println statements while programming your robot?</p>
+            <label><input type="radio" name="q8" value="debug" /> To debug by printing messages or variable values</label>
+            <label><input type="radio" name="q8" value="faster" /> To make the robot move faster</label>
+            <label><input type="radio" name="q8" value="internet" /> To connect to the internet</label>
+        </div>
+
+        <div class="question" data-id="q9">
+            <p>9. During Day&nbsp;5, what is one reason you hold a friendly tournament?</p>
+            <label><input type="radio" name="q9" value="showcase" /> To showcase robot designs and gather peer feedback</label>
+            <label><input type="radio" name="q9" value="celebrate" /> To celebrate with cake</label>
+            <label><input type="radio" name="q9" value="dance" /> To learn new dance moves</label>
+        </div>
+
+        <div class="question" data-id="q10">
+            <p>10. After completing Week&nbsp;1, what might you review to see how your robot has improved? <input type="text" placeholder="?" /></p>
+        </div>
+
+        <button id="checkBtn">Check Answers</button>
+        <p id="score" aria-live="polite"></p>
+        <div id="answers"></div>
+    </main>
+
+    <script src="shared.js"></script>
+    <script>
+        const answerKey = {
+            q1: "javac",
+            q2: "java",
+            q3: 'System.out.println("Hello World!");',
+            q4: "run()",
+            q5: "onScannedRobot",
+            q6: "double",
+            q7: "for",
+            q8: "debug",
+            q9: "showcase",
+            q10: "review your code"
+        };
+
+        const checkBtn = document.getElementById("checkBtn");
+        const scoreDisplay = document.getElementById("score");
+        const answersDiv = document.getElementById("answers");
+
+        checkBtn.addEventListener("click", () => {
+            let correct = 0;
+            const questions = document.querySelectorAll(".question");
+
+            questions.forEach(q => {
+                const id = q.dataset.id;
+                const rightAnswer = answerKey[id];
+                let userAnswer = "";
+                const textInput = q.querySelector("input[type='text']");
+                if (textInput) {
+                    userAnswer = textInput.value.trim();
+                } else {
+                    const checked = q.querySelector("input[type='radio']:checked");
+                    userAnswer = checked ? checked.value.trim() : "";
+                }
+
+                const isCorrect = userAnswer === rightAnswer;
+
+                q.querySelectorAll(".feedback").forEach(el => el.remove());
+
+                const fb = document.createElement("span");
+                fb.classList.add("feedback", isCorrect ? "correct" : "incorrect");
+                fb.textContent = isCorrect ? "✔" : "✘";
+                q.appendChild(fb);
+
+                if (isCorrect) correct++;
+            });
+
+            scoreDisplay.textContent = `You got ${correct} / ${questions.length} correct.`;
+            saveScore(5, correct);
+
+            const listItems = Object.values(answerKey)
+                .map(ans => `<li><code>${ans}</code></li>`)
+                .join("");
+            answersDiv.innerHTML = `<h2>Correct Answers</h2><ol>${listItems}</ol>`;
+            answersDiv.style.display = "block";
+        });
+    </script>
+</body>
+</html>
