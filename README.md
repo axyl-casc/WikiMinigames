@@ -17,11 +17,11 @@ Explorers are driven by the joy of discovery. They thrive in environments where 
 **Role in Robocode:**
 Everyone begins as an Explorer. You'll start by discovering how bots work and experimenting with movement, sensors, and code. This phase sparks curiosity and lets you uncover strategies at your own pace.
 
-**Design Tips:**
+**Fun Tips:**
 
-* Include easter eggs and hidden paths
-* Encourage experimentation with minimal constraints
-* Refresh content regularly to prevent boredom
+* Search for hidden treasures and secret spots
+* Try out new moves—you never know what you'll find!
+* Keep exploring different paths to discover surprises
 
 **Stages:** Discovery → Trial → Occupation → Mentor
 **Related Traits:** Scientist, Technician
@@ -38,11 +38,11 @@ Achievers flourish when presented with structured challenges and opportunities f
 **Role in Robocode:**
 As an Achiever, you'll earn the most stars on your player card by scoring high in mini-games and coding challenges. Your path is about growth and visible accomplishment through targeted goals.
 
-**Design Tips:**
+**Fun Tips:**
 
-* Include badges, milestones, and visible progress
-* Encourage personal goal-setting and reflection
-* Offer skill-building quests or challenges
+* Collect cool badges and level up
+* Set goals for yourself and celebrate when you hit them
+* Take on skill quests to show what you can do
 
 **Stages:** Ambition → Pursuit → Optimization → Recognition
 **Related Traits:** Planner, Go-Getter
@@ -59,11 +59,11 @@ Competitors are achievement-oriented like achievers, but their focus is on *winn
 **Role in Robocode:**
 As a Competitor, you focus on having the strongest bot in battle. Your code is optimized for tactical superiority, survival, and domination in the arena.
 
-**Design Tips:**
+**Fun Tips:**
 
-* Include rankings and tournaments
-* Support personal strategies and team building
-* Allow them to showcase their expertise
+* Join tournaments to climb the leaderboard
+* Build winning strategies with friends
+* Show off your best moves for bragging rights
 
 **Stages:** Superiority → Tactical → Leadership → Legacy
 **Related Traits:** Leader, Prestige-Seeker
@@ -80,11 +80,11 @@ Harmonizers thrive on connection. They are the glue of any group, always looking
 **Role in Robocode:**
 As a Harmonizer, you help organize the competition. You might create fun chants for tanks, handle event commentary, design advertisements, and support the event's vibe. Your role boosts community spirit and cohesion.
 
-**Design Tips:**
+**Fun Tips:**
 
-* Include group missions and peer collaboration
-* Highlight social contributions and teamwork
-* Offer roles for mentorship and partnership
+* Team up on group missions and help each other
+* Share cheers and keep everyone motivated
+* Teach your friends tricks and tips
 
 **Stages:** Connection → Partnership → Community → Impact
 **Related Traits:** Networker, Companion
