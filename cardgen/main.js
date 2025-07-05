@@ -31,7 +31,6 @@ function buildCard() {
   const statsEl = document.getElementById("stats");
   const starEl = document.getElementById("star-rating");
   const roleTitleEl = document.getElementById("player-role");
-  const roleSelectEl = document.getElementById("role-select");
   statsEl.innerHTML = "";
 
   renderRobotMeta();
@@ -63,7 +62,7 @@ function buildCard() {
   const hue = Math.max(0, Math.min(120, total));
   let [r1, g1, b1] = hslToRgb(hue, 0.65, 0.4);
   let [r2, g2, b2] = hslToRgb(hue, 0.65, 0.6);
-  const role = roleSelectEl.value || "";
+  const role = localStorage.getItem("robotCard:role") || "";
   roleTitleEl.textContent = ROLE_EMOJIS[role] || "";
   if (ROLE_COLORS[role]) {
     const [tr, tg, tb] = ROLE_COLORS[role];
@@ -90,16 +89,9 @@ window.addEventListener('DOMContentLoaded', () => {
   const imgEl = document.getElementById("tank-image");
   const cardEl = document.getElementById("card");
   const codeInputEl = document.getElementById("code-input");
-  const roleSelectEl = document.getElementById("role-select");
   const editImgBtn = document.getElementById("edit-image-btn");
   const editJsonBtn = document.getElementById("edit-json-btn");
   const editSheetBtn = document.getElementById("edit-scoresheet-btn");
-
-  roleSelectEl.value = localStorage.getItem("robotCard:role") || "";
-  roleSelectEl.addEventListener("change", () => {
-    localStorage.setItem("robotCard:role", roleSelectEl.value);
-    buildCard();
-  });
 
   codeInputEl.addEventListener("input", () => {
     updateCodeBonus();
