@@ -107,7 +107,7 @@ function draw(){
     ctx.fillRect(e.x,e.y,ENEMY_SIZE,ENEMY_SIZE);
   });
 
-  ctx.fillStyle='#fafafa';ctx.font='16px monospace';ctx.fillText(`High Score: ${getScore(SCORE_SLOT)} Score: ${score*difficulty}`,10,20);
+  ctx.fillStyle='#fafafa';ctx.font='16px monospace';ctx.fillText(`High Score: ${getScore(SCORE_SLOT)} Score: ${(score*difficulty)+difficulty}`,10,20);
   const t=Math.max(0,GAME_DURATION-(performance.now()-startTime));ctx.fillText(`Time: ${Math.ceil(t/1000)}s`,canvas.width-100,20);
 }
 
@@ -116,7 +116,7 @@ function gameLoop(){animationId=requestAnimationFrame(gameLoop);update();draw();
 function endGame(done){
   cancelAnimationFrame(animationId);
   if(done){score+=10;}
-  const finalScore=score*difficulty;
+  const finalScore=(score*difficulty)+difficulty;
   saveScore(SCORE_SLOT,finalScore);
   const best=getScore(SCORE_SLOT);
   overlay.innerHTML=`<h1>${done?'Mission Complete! +10 to score!':'Tank Destroyed'}</h1>
