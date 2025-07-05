@@ -30,6 +30,7 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       border: 4px solid transparent;
       transition: border-color 0.3s ease;
+      position: relative;
     }
 
     .card h2 {
@@ -49,6 +50,13 @@
       color: #f1c40f;
       font-size: 1.25rem;
       margin-bottom: 0.25rem;
+    }
+
+    .player-role {
+      position: absolute;
+      top: 0.25rem;
+      left: 0.25rem;
+      font-size: 1.25rem;
     }
 
     /* ── Buttons ────────────────────────────────────── */
@@ -111,6 +119,17 @@
     <button id="edit-scoresheet-btn" type="button">Edit Scoresheet</button>
   </div>
 
+  <div style="margin-bottom:1rem;">
+    <label for="role-select">Role:</label>
+    <select id="role-select">
+      <option value="">-- Select --</option>
+      <option value="Explorer">Explorer</option>
+      <option value="Achiever">Achiever</option>
+      <option value="Competitor">Competitor</option>
+      <option value="Harmonizer">Harmonizer</option>
+    </select>
+  </div>
+
   <div style="margin-bottom:1rem; display:none;">
     <label for="code-input">Card code:</label>
     <input id="code-input" type="text" />
@@ -119,6 +138,7 @@
   <div class="preview-wrapper">
     <div id="card" class="card" style="display:none;">
       <div id="star-rating" style="font-size: large;" class="stars"></div>
+      <div id="player-role" class="player-role"></div>
       <img id="tank-image" src="" alt="Tank preview"
         style="width:100%;border-radius:0.5rem;margin-bottom:0.5rem;display:none;" />
       <h2 id="robot-name"></h2>

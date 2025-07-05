@@ -4,8 +4,10 @@ function loadStoredData() {
   const jsonUploadEl = document.getElementById("json-upload");
   const imgEl = document.getElementById("tank-image");
   const cardEl = document.getElementById("card");
+  const roleSelectEl = document.getElementById("role-select");
   const storedImg = localStorage.getItem("robotCard:image");
   const storedJson = localStorage.getItem("robotCard:json");
+  const storedRole = localStorage.getItem("robotCard:role");
   if (storedImg) {
     imgEl.src = storedImg;
     imgEl.style.display = "block";
@@ -14,7 +16,10 @@ function loadStoredData() {
   if (storedJson) {
     try { window.robotInfo = JSON.parse(storedJson); } catch { }
   }
-  if (storedImg || storedJson) {
+  if (storedRole) {
+    roleSelectEl.value = storedRole;
+  }
+  if (storedImg || storedJson || storedRole) {
     buildCard();
     if (!window.intervalId) window.intervalId = setInterval(buildCard, 60000);
   }
@@ -23,8 +28,10 @@ function loadStoredData() {
 function updateCardFromStorage() {
   const imgEl = document.getElementById("tank-image");
   const cardEl = document.getElementById("card");
+  const roleSelectEl = document.getElementById("role-select");
   const storedImg = localStorage.getItem("robotCard:image");
   const storedJson = localStorage.getItem("robotCard:json");
+  const storedRole = localStorage.getItem("robotCard:role");
   if (storedImg && storedImg !== imgEl.src) {
     imgEl.src = storedImg;
     imgEl.style.display = "block";
@@ -37,6 +44,9 @@ function updateCardFromStorage() {
         window.robotInfo = parsed;
       }
     } catch {}
+  }
+  if (storedRole) {
+    roleSelectEl.value = storedRole;
   }
   buildCard();
 }
