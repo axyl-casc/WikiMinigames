@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Player Profile Selector</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 1rem;
+      background: #0e0e0e;
+      color: #fafafa;
+      font-family: system-ui, sans-serif;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .tabs button {
+      background: #1c2737;
+      color: #fafafa;
+      border: 1px solid #445469;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+    }
+    .tabs button.active {
+      background: #1877f2;
+    }
+    .panel {
+      display: none;
+      background: #111a27;
+      border: 2px solid #2c3e50;
+      border-radius: 0.75rem;
+      padding: 1rem 1.25rem;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .panel.active {
+      display: block;
+    }
+    .panel button {
+      margin-top: 1rem;
+      background: #10b981;
+      color: #fff;
+      border: none;
+      border-radius: 0.5rem;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Choose Your Player Profile</h1>
+  <div class="tabs">
+    <button class="tab" data-role="Explorer">Explorer ✨</button>
+    <button class="tab" data-role="Achiever">Achiever 🏆</button>
+    <button class="tab" data-role="Competitor">Competitor 🔥</button>
+    <button class="tab" data-role="Harmonizer">Harmonizer 🤝</button>
+  </div>
+  <div id="Explorer" class="panel">
+    <h2>Explorer ✨</h2>
+    <p><strong>Motivation:</strong> Autonomy, Curiosity, Discovery</p>
+    <p><strong>Catchphrase:</strong> "Let me wander and uncover the secrets."</p>
+    <p>Explorers are driven by the joy of discovery. They thrive in environments where they can uncover hidden details, test systems, and experiment without strict time pressure. Their engagement comes from novelty and surprise rather than competition or external rewards.</p>
+    <p><strong>Role in Robocode:</strong> Everyone begins as an Explorer. Students start by discovering how bots work, experimenting with movement, sensors, and code. This early phase fosters curiosity and lets learners uncover strategies and systems at their own pace.</p>
+    <p><strong>Design Tips:</strong></p>
+    <ul>
+      <li>Include easter eggs and hidden paths</li>
+      <li>Encourage experimentation with minimal constraints</li>
+      <li>Refresh content regularly to prevent boredom</li>
+    </ul>
+    <p><strong>Stages:</strong> Discovery → Trial → Occupation → Mentor</p>
+    <p><strong>Related Traits:</strong> Scientist, Technician</p>
+    <button class="select-btn" data-role="Explorer">Select Explorer</button>
+  </div>
+  <div id="Achiever" class="panel">
+    <h2>Achiever 🏆</h2>
+    <p><strong>Motivation:</strong> Mastery, Growth, Accomplishment</p>
+    <p><strong>Catchphrase:</strong> "Give me goals and let me prove myself."</p>
+    <p>Achievers flourish when presented with structured challenges and opportunities for advancement. They enjoy leveling up, mastering skills, and receiving recognition. Socially, they connect with other high performers and often thrive on collaboration with like-minded peers.</p>
+    <p><strong>Role in Robocode:</strong> Achievers earn the most stars on their player cards by scoring high in mini-games and coding challenges. Their path is about growth and visible accomplishment through targeted goals.</p>
+    <p><strong>Design Tips:</strong></p>
+    <ul>
+      <li>Include badges, milestones, and visible progress</li>
+      <li>Encourage personal goal-setting and reflection</li>
+      <li>Offer skill-building quests or challenges</li>
+    </ul>
+    <p><strong>Stages:</strong> Ambition → Pursuit → Optimization → Recognition</p>
+    <p><strong>Related Traits:</strong> Planner, Go-Getter</p>
+    <button class="select-btn" data-role="Achiever">Select Achiever</button>
+  </div>
+  <div id="Competitor" class="panel">
+    <h2>Competitor 🔥</h2>
+    <p><strong>Motivation:</strong> Status, Prestige, Victory</p>
+    <p><strong>Catchphrase:</strong> "I want to win—and prove it."</p>
+    <p>Competitors are achievement-oriented like achievers, but their focus is on <em>winning against others</em>. They enjoy leaderboards, ranked play, and opportunities to demonstrate superiority. A competitor's experience is heightened by real-time opposition and public recognition.</p>
+    <p><strong>Role in Robocode:</strong> Competitors focus on having the strongest bot in battle. Their code is optimized for tactical superiority, survival, and domination in the arena.</p>
+    <p><strong>Design Tips:</strong></p>
+    <ul>
+      <li>Include rankings and tournaments</li>
+      <li>Support personal strategies and team building</li>
+      <li>Allow them to showcase their expertise</li>
+    </ul>
+    <p><strong>Stages:</strong> Superiority → Tactical → Leadership → Legacy</p>
+    <p><strong>Related Traits:</strong> Leader, Prestige-Seeker</p>
+    <button class="select-btn" data-role="Competitor">Select Competitor</button>
+  </div>
+  <div id="Harmonizer" class="panel">
+    <h2>Harmonizer 🤝</h2>
+    <p><strong>Motivation:</strong> Belonging, Altruism, Support</p>
+    <p><strong>Catchphrase:</strong> "Let’s build something together."</p>
+    <p>Harmonizers thrive on connection. They are the glue of any group, always looking to support and uplift others. Teamwork, empathy, and shared goals fuel their engagement. They flourish in cooperative settings and gain satisfaction from helping others succeed.</p>
+    <p><strong>Role in Robocode:</strong> Harmonizers help organize the competition. They may create fun chants for tanks, handle event commentary, design advertisements, and support the vibe of the event. Their role boosts community spirit and cohesion.</p>
+    <p><strong>Design Tips:</strong></p>
+    <ul>
+      <li>Include group missions and peer collaboration</li>
+      <li>Highlight social contributions and teamwork</li>
+      <li>Offer roles for mentorship and partnership</li>
+    </ul>
+    <p><strong>Stages:</strong> Connection → Partnership → Community → Impact</p>
+    <p><strong>Related Traits:</strong> Networker, Companion</p>
+    <button class="select-btn" data-role="Harmonizer">Select Harmonizer</button>
+  </div>
+  <script>
+    const tabs = document.querySelectorAll('.tab');
+    const panels = document.querySelectorAll('.panel');
+    const buttons = document.querySelectorAll('.select-btn');
+
+    function show(role) {
+      tabs.forEach(t => t.classList.toggle('active', t.dataset.role === role));
+      panels.forEach(p => p.classList.toggle('active', p.id === role));
+    }
+
+    function updateButtons(selected) {
+      buttons.forEach(btn => {
+        if (btn.dataset.role === selected) {
+          btn.textContent = 'Currently selected';
+          btn.disabled = true;
+        } else {
+          btn.textContent = 'Select ' + btn.dataset.role;
+          btn.disabled = false;
+        }
+      });
+    }
+
+    tabs.forEach(t => {
+      t.addEventListener('click', () => show(t.dataset.role));
+    });
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const role = btn.dataset.role;
+        localStorage.setItem('robotCard:role', role);
+        updateButtons(role);
+      });
+    });
+
+    const stored = localStorage.getItem('robotCard:role') || 'Explorer';
+    show(stored);
+    updateButtons(stored);
+  </script>
+</body>
+</html>
