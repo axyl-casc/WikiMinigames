@@ -46,14 +46,18 @@
     .panel.active {
       display: block;
     }
-    .panel button {
+    .select-btn {
       margin-top: 1rem;
-      background: #10b981;
+      background: #1877f2;
       color: #fff;
       border: none;
       border-radius: 0.5rem;
       padding: 0.5rem 1rem;
       cursor: pointer;
+    }
+
+    .select-btn.selected {
+      background: #10b981;
     }
   </style>
 </head>
@@ -144,9 +148,11 @@
         if (btn.dataset.role === selected) {
           btn.textContent = 'Currently selected';
           btn.disabled = true;
+          btn.classList.add('selected');
         } else {
           btn.textContent = 'Select ' + btn.dataset.role;
           btn.disabled = false;
+          btn.classList.remove('selected');
         }
       });
     }
