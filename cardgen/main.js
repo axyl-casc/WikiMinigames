@@ -18,6 +18,13 @@ const ROLE_EMOJIS = {
   Harmonizer: "🤝",
 };
 
+function starsForScore(score, max) {
+  if (score >= max) return 3;
+  if (score >= max * 0.8) return 2;
+  if (score >= max * 0.5) return 1;
+  return 0;
+}
+
 function updateCodeBonus() {
   const code = document.getElementById("code-input").value.trim();
   if (/^\d.*[abc]$/.test(code)) {
@@ -36,13 +43,14 @@ function buildCard() {
   renderRobotMeta();
 
   let total = 0;
+  let starTotal = 0;
   GAME_IDS.forEach((id) => {
     const score = getScore(id) || 0;
     total += score;
+    starTotal += starsForScore(score, MAX_SCORES[id]);
   });
 
   updateCodeBonus();
-  const scoreForStars = total + window.codeBonus;
 
   let rank = 0;
   if (window.robotInfo) {
@@ -55,7 +63,7 @@ function buildCard() {
     } catch {}
   }
 
-  const baseStars = Math.min(12, Math.round((scoreForStars / MAX_TOTAL) * 12));
+  const baseStars = Math.min(12, starTotal + window.codeBonus);
   const starCount = Math.max(0, baseStars - rank);
   starEl.textContent = "★".repeat(starCount);
 
