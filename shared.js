@@ -46,18 +46,6 @@ function hslToRgb(h, s, l) {
   return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
 }
 
-// Example: Find complementary of RGB(125, 10, 200)
-const originalRgb = [125, 10, 200];
-const [h, s, l] = rgbToHsl(...originalRgb);
-const complementaryHue = (h + 180) % 360;
-const complementaryRgb = hslToRgb(complementaryHue, s, l);
-
-console.log(`Original RGB: ${originalRgb}`);
-console.log(`Complementary RGB: ${complementaryRgb}`);
-
-
-
-
 /**
  * Save a score for the given game only if it's greater than the current high score.
  * - gameID: any string (e.g. "dodge", "tank")
