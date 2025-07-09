@@ -566,6 +566,28 @@
           storeScoresFromSheet(rows);
           buildCard();
         }).getScores();
+
+        // Pull latest form submission for card data
+        google.script.run.withSuccessHandler((data) => {
+          if (data) {
+            if (data.json) {
+              try {
+                window.robotInfo = JSON.parse(data.json);
+                localStorage.setItem('robotCard:json', data.json);
+              } catch (err) {
+                console.error('Failed to parse JSON from form', err);
+              }
+            }
+            if (data.imageDataUrl) {
+              imgEl.src = data.imageDataUrl;
+              imgEl.style.display = 'block';
+              cardEl.style.display = 'block';
+              localStorage.setItem('robotCard:image', data.imageDataUrl);
+            }
+            buildCard();
+            if (!window.intervalId) window.intervalId = setInterval(buildCard, 60000);
+          }
+        }).getFormData();
       }
     });
   </script>
