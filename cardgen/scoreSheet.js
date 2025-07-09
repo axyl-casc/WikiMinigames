@@ -32,7 +32,7 @@ function parseScoreSheet(raw) {
         name: parts[1] || '',
         survival: Number(parts[2]) || 0,
         lastSurvivor: Number(parts[3]) || 0,
-        bullet: Number(parts[4]) || 0,
+        bullet: Number(parts[5]) || 0,
         bonus: Number(parts[6]) || 0,
         raw: line,
       };
