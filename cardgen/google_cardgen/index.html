@@ -306,7 +306,7 @@
             name: parts[1] || '',
             survival: Number(parts[2]) || 0,
             lastSurvivor: Number(parts[3]) || 0,
-            bullet: Number(parts[4]) || 0,
+            bullet: Number(parts[5]) || 0,
             bonus: Number(parts[6]) || 0,
             raw: line,
           };
@@ -373,7 +373,7 @@
         name: r[1] || '',
         survival: Number(r[2]) || 0,
         lastSurvivor: Number(r[3]) || 0,
-        bullet: Number(r[4]) || 0,
+        bullet: Number(r[5]) || 0,
         bonus: Number(r[6]) || 0,
         raw: r.join('\t'),
       }));
@@ -632,7 +632,7 @@
           name: r[1] || '',
           survival: Number(r[2]) || 0,
           lastSurvivor: Number(r[3]) || 0,
-          bullet: Number(r[4]) || 0,
+          bullet: Number(r[5]) || 0,
           bonus: Number(r[6]) || 0,
           raw: r.join('\t')
         }));
