@@ -27,19 +27,18 @@ function getFormData() {
   var items = latest.getItemResponses();
   var result = {};
 
-  for (var i = 0; i < items.length; i++) {
-    var item = items[i];
-    var title = item.getItem().getTitle().toLowerCase();
+  // By convention the first question contains the JSON text
+  // and the last question is a file upload for the tank image.
+  if (items.length >= 1) {
+    result.json = items[0].getResponse();
+  }
 
-    if (title.indexOf('json') !== -1) {
-      result.json = item.getResponse();
-    } else if (title.indexOf('image') !== -1) {
-      var fileIds = item.getResponse();
-      if (fileIds && fileIds.length > 0) {
-        var file = DriveApp.getFileById(fileIds[0]);
-        var blob = file.getBlob();
-        result.imageDataUrl = 'data:' + blob.getContentType() + ';base64,' + Utilities.base64Encode(blob.getBytes());
-      }
+  if (items.length >= 2) {
+    var upload = items[items.length - 1].getResponse();
+    if (upload && upload.length > 0) {
+      var file = DriveApp.getFileById(upload[0]);
+      var blob = file.getBlob();
+      result.imageDataUrl = 'data:' + blob.getContentType() + ';base64,' + Utilities.base64Encode(blob.getBytes());
     }
   }
 
