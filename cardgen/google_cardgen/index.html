@@ -562,13 +562,9 @@
       loadStoredData();
 
       if (google && google.script) {
-        google.script.run.withSuccessHandler((rows) => {
-          storeScoresFromSheet(rows);
-          buildCard();
-        }).getScores();
-
         // Pull latest form submission for card data.
-        // The first form question should contain the JSON text and
+        // The first form question should contain the JSON text,
+        // the second last question stores the game ID, and
         // the last question should be a file upload for the image.
         google.script.run.withSuccessHandler((data) => {
           if (data) {
@@ -586,7 +582,18 @@
               cardEl.style.display = 'block';
               localStorage.setItem('robotCard:image', data.imageDataUrl);
             }
-            buildCard();
+            const gid = data.gameId;
+            if (gid) {
+              google.script.run.withSuccessHandler((rows) => {
+                storeScoresFromSheet(rows);
+                buildCard();
+              }).getScores(gid);
+            } else {
+              google.script.run.withSuccessHandler((rows) => {
+                storeScoresFromSheet(rows);
+                buildCard();
+              }).getScores();
+            }
             if (!window.intervalId) window.intervalId = setInterval(buildCard, 60000);
           }
         }).getFormData();
@@ -648,25 +655,7 @@
       }).createCardPdf();
     });
 
-    // Load score data from the linked Google Sheet
-    google.script.run.withSuccessHandler(function(rows) {
-      if (Array.isArray(rows)) {
-        const scores = rows.map(r => ({
-          rank: Number(r[0]) || 0,
-          name: r[1] || '',
-          survival: Number(r[2]) || 0,
-          lastSurvivor: Number(r[3]) || 0,
-          bullet: Number(r[5]) || 0,
-          bonus: Number(r[6]) || 0,
-          raw: r.join('\t')
-        }));
-        try {
-          localStorage.setItem('botScoreSheet', JSON.stringify(scores));
-        } catch (err) {
-          console.error('Failed to store scores from sheet', err);
-        }
-      }
-    }).getScores();
+    // Score data will be loaded after fetching form details
   </script>
 
 </body>
