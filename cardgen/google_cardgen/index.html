@@ -421,14 +421,10 @@
       renderRobotMeta();
 
       let total = 0;
-      let starTotal = 0;
       GAME_IDS.forEach((id) => {
         const score = getScore(id) || 0;
         total += score;
-        starTotal += starsForScore(score, MAX_SCORES[id]);
       });
-
-      updateCodeBonus();
 
       let rank = 0;
       if (window.robotInfo) {
@@ -441,8 +437,7 @@
         } catch {}
       }
 
-      const baseStars = Math.min(12, starTotal + window.codeBonus);
-      const starCount = Math.max(0, baseStars - rank);
+      const starCount = Math.max(0, 10 - rank);
       starEl.textContent = "★".repeat(starCount);
 
       const hue = Math.max(0, Math.min(120, total));
@@ -650,9 +645,10 @@
   <script>
     // Trigger PDF generation through Apps Script
     document.getElementById('pdf-btn').addEventListener('click', () => {
+      const cardHtml = document.getElementById('card').outerHTML;
       google.script.run.withSuccessHandler(function(url) {
         window.open(url);
-      }).createCardPdf();
+      }).createCardPdf(cardHtml);
     });
 
     // Score data will be loaded after fetching form details
