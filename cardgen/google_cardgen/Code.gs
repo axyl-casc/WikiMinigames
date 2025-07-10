@@ -16,8 +16,10 @@ function getScores(gameId) {
   return sheet ? sheet.getDataRange().getValues() : [];
 }
 
-function createCardPdf() {
-  var html = HtmlService.createHtmlOutputFromFile('index').getContent();
+function createCardPdf(cardHtml) {
+  var template = HtmlService.createTemplateFromFile('pdf_template');
+  template.cardHtml = cardHtml || '';
+  var html = template.evaluate().getContent();
   var blob = Utilities.newBlob(html, 'text/html', 'card.html');
   var pdf = blob.getAs('application/pdf').setName('robot_card.pdf');
   var file = DriveApp.createFile(pdf);
