@@ -567,7 +567,9 @@
           buildCard();
         }).getScores();
 
-        // Pull latest form submission for card data
+        // Pull latest form submission for card data.
+        // The first form question should contain the JSON text and
+        // the last question should be a file upload for the image.
         google.script.run.withSuccessHandler((data) => {
           if (data) {
             if (data.json) {
