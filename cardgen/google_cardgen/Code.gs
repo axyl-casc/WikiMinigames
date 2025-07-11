@@ -16,26 +16,13 @@ function getScores(gameId) {
   return sheet ? sheet.getDataRange().getValues() : [];
 }
 
-var PDF_FOLDER_ID = 'FOLDER_ID_HERE';
-
 function createCardPdf(cardHtml) {
   var template = HtmlService.createTemplateFromFile('pdf_template');
   template.cardHtml = cardHtml || '';
   var html = template.evaluate().getContent();
   var blob = Utilities.newBlob(html, 'text/html', 'card.html');
-  var pdf = blob.getAs('application/pdf');
-  pdf.setName('robot_card_' + new Date().toISOString() + '.pdf');
-
-  // Save the generated PDF inside the configured folder. If the folder
-  // ID is invalid, fallback to the Drive root.
-  var folder;
-  try {
-    folder = DriveApp.getFolderById(PDF_FOLDER_ID);
-  } catch (err) {
-    folder = DriveApp.getRootFolder();
-  }
-
-  var file = folder.createFile(pdf);
+  var pdf = blob.getAs('application/pdf').setName('robot_card.pdf');
+  var file = DriveApp.createFile(pdf);
   return file.getUrl();
 }
 
