@@ -89,11 +89,6 @@
       display: inline-block;
     }
 
-    #update-btn {
-      background: #3b82f6;
-      color: #fff;
-      margin-right: 0.5rem;
-    }
   </style>
 
   <!-- html2canvas for PNG download -->
@@ -247,8 +242,6 @@
   <script>
     // from storage.js
     function loadStoredData() {
-      const uploadEl = document.getElementById("tank-upload");
-      const jsonUploadEl = document.getElementById("json-upload");
       const imgEl = document.getElementById("tank-image");
       const cardEl = document.getElementById("card");
       const storedImg = localStorage.getItem("robotCard:image");
@@ -404,7 +397,9 @@
     }
 
     function updateCodeBonus() {
-      const code = document.getElementById("code-input").value.trim();
+      const input = document.getElementById("code-input");
+      if (!input) return;
+      const code = input.value.trim();
       if (/^\d.*[abc]$/.test(code)) {
         window.codeBonus = (code.match(/%/g) || []).length;
       } else {
@@ -463,78 +458,8 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      const uploadEl = document.getElementById("tank-upload");
-      const jsonUploadEl = document.getElementById("json-upload");
-      const scoreSheetUploadEl = document.getElementById("scoresheet-upload");
       const imgEl = document.getElementById("tank-image");
       const cardEl = document.getElementById("card");
-      const codeInputEl = document.getElementById("code-input");
-      const editImgBtn = document.getElementById("edit-image-btn");
-      const editJsonBtn = document.getElementById("edit-json-btn");
-      const editSheetBtn = document.getElementById("edit-scoresheet-btn");
-
-      codeInputEl.addEventListener("input", () => {
-        updateCodeBonus();
-        buildCard();
-      });
-
-      editImgBtn.addEventListener("click", () => uploadEl.click());
-      editJsonBtn.addEventListener("click", () => jsonUploadEl.click());
-      editSheetBtn.addEventListener("click", () => scoreSheetUploadEl.click());
-
-      uploadEl.addEventListener("change", (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          imgEl.src = ev.target.result;
-          imgEl.style.display = "block";
-          cardEl.style.display = "block";
-          localStorage.setItem("robotCard:image", ev.target.result);
-          buildCard();
-          if (!window.intervalId) {
-            window.intervalId = setInterval(buildCard, 60000);
-          }
-        };
-        reader.readAsDataURL(file);
-      });
-
-      jsonUploadEl.addEventListener("change", (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          try {
-            window.robotInfo = JSON.parse(ev.target.result);
-            localStorage.setItem("robotCard:json", ev.target.result);
-          } catch (err) {
-            alert("Invalid JSON file");
-            window.robotInfo = null;
-          }
-          cardEl.style.display = "block";
-          buildCard();
-          if (!window.intervalId) {
-            window.intervalId = setInterval(buildCard, 60000);
-          }
-        };
-        reader.readAsText(file);
-      });
-
-      scoreSheetUploadEl.addEventListener("change", (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          saveScoreSheet(ev.target.result);
-          buildCard();
-          if (!window.intervalId) {
-            window.intervalId = setInterval(buildCard, 60000);
-          }
-        };
-        reader.readAsText(file);
-      });
-
-      document.getElementById("update-btn").addEventListener("click", updateCardFromStorage);
 
       document.getElementById("download-btn").addEventListener("click", () => {
         html2canvas(document.getElementById("card"), { scale: 2 }).then((canvas) => {
@@ -545,14 +470,6 @@
         });
       });
 
-      const pdfBtn = document.getElementById("pdf-btn");
-      if (pdfBtn && google && google.script) {
-        pdfBtn.addEventListener("click", () => {
-          google.script.run.withSuccessHandler(function(url) {
-            window.open(url);
-          }).createCardPdf();
-        });
-      }
 
       loadStoredData();
 
@@ -600,29 +517,6 @@
 <body>
   <h1>Robot Player‑Card Generator</h1>
 
-  <div style="margin-bottom:1rem;">
-    <label for="tank-upload">Tank image:</label>
-    <input id="tank-upload" type="file" accept="image/*" style="display:none;" />
-    <button id="edit-image-btn" type="button">Edit Image</button>
-  </div>
-
-  <div style="margin-bottom:1rem;">
-    <label for="json-upload">Robot JSON:</label>
-    <input id="json-upload" type="file" accept="application/json" style="display:none;" />
-    <button id="edit-json-btn" type="button">Edit JSON</button>
-  </div>
-
-  <div style="margin-bottom:1rem;">
-    <label for="scoresheet-upload">Score sheet:</label>
-    <input id="scoresheet-upload" type="file" accept=".txt" style="display:none;" />
-    <button id="edit-scoresheet-btn" type="button">Edit Scoresheet</button>
-  </div>
-
-
-  <div style="margin-bottom:1rem; display:none;">
-    <label for="code-input">Card code:</label>
-    <input id="code-input" type="text" />
-  </div>
 
   <div class="preview-wrapper">
     <div id="card" class="card" style="display:none;">
@@ -638,21 +532,9 @@
     </div>
   </div>
 
-  <button id="update-btn">Update Card</button>
   <button id="download-btn">Download PNG</button>
-  <button id="pdf-btn">Download PDF</button>
 
-  <script>
-    // Trigger PDF generation through Apps Script
-    document.getElementById('pdf-btn').addEventListener('click', () => {
-      const cardHtml = document.getElementById('card').outerHTML;
-      google.script.run.withSuccessHandler(function(url) {
-        window.open(url);
-      }).createCardPdf(cardHtml);
-    });
-
-    // Score data will be loaded after fetching form details
-  </script>
+  <!-- Score data will be loaded after fetching form details -->
 
 </body>
 
