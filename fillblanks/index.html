@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fill in the Blanks</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body{display:flex;flex-direction:column;align-items:center;padding:2rem;gap:1.5rem;}
+    .link-grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));width:100%;max-width:600px;}
+    .quiz-card{background:#2e2e48;border:none;border-radius:12px;color:#fff;padding:1rem;cursor:pointer;font-size:1.1rem;transition:transform .2s,background .2s;}
+    .quiz-card:hover{background:#6d67ff;transform:translateY(-4px);}
+  </style>
+</head>
+<body>
+  <h1>Fill in the Blanks</h1>
+  <div class="link-grid">
+    <button class="quiz-card" onclick="location.href='HelloWorld.html'">Hello World</button>
+    <button class="quiz-card" onclick="location.href='Datatypes.html'">Java Data Types</button>
+    <button class="quiz-card" onclick="location.href='Robocode.html'">Robocode Snippet</button>
+  </div>
+</body>
+</html>
