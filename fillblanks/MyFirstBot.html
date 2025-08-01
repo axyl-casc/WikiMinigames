@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyFirstBot - Fill in the Blanks</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-game="fillblanks-myfirstbot">
+  <main>
+    <h1>MyFirstBot - Fill in the Blanks</h1>
+    <pre>
+import dev.robocode.tankroyale.botapi.*;
+import dev.robocode.tankroyale.botapi.events.*;
+import dev.robocode.tankroyale.botapi.graphics.Color;
+
+// MyFirstBot
+public class MyFirstBot extends <input type="text" data-answer="Bot"> {
+
+    // The main method starts our bot
+    public static void main(<input type="text" data-answer="String">[] args) {
+        new MyFirstBot().start();
+    }
+
+    // Constructor, which loads the bot config file
+    MyFirstBot() {
+        super(<input type="text" data-answer="BotInfo">.fromFile("MyFirstBot.json"));
+    }
+
+    @Override
+    public void run() {
+        setBodyColor(Color.ORANGE_RED);
+        setTurretColor(Color.GAINSBORO);
+        setRadarColor(Color.GREEN_YELLOW);
+        setBulletColor(Color.GHOST_WHITE);
+        setScanColor(Color.PINK);
+        while (isRunning()) {
+            forward(100);
+            turnGunLeft(360);
+            back(100);
+            turnGunLeft(360);
+        }
+    }
+
+    @Override
+    public void onScannedBot(ScannedBotEvent e) {
+        fire(1);
+    }
+
+    @Override
+    public void onHitByBullet(HitByBulletEvent e) {
+        var bearing = calcBearing(e.getBullet().getDirection());
+        turnRight(90 - bearing);
+    }
+}
+    </pre>
+    <button id="checkBtn">Check Answers</button>
+    <p id="score"></p>
+  </main>
+  <script src="../shared.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
