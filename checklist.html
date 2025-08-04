@@ -18,10 +18,11 @@
 
         .tabs {
             display: flex;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             gap: 0.5rem;
             justify-content: center;
             margin-bottom: 1rem;
+            overflow-x: auto;
         }
 
         .tab-btn {
@@ -72,52 +73,52 @@
 
     <script>
         const days = {
-            "Day 1: Begin the Journey": [
+            "Day 1": [
                 "Install Java & Robocode",
                 "Run a \"Hello World\" test",
                 "Explore the Robocode arena (offline & online options)",
             ],
-            "🤖 Day 2: First Robot": [
+            "Day 2": [
                 "Code and compile a robot",
                 "Meet Robocode methods like run() and turnGunRight()",
                 "Learn the fundamental geometry used in robocode",
             ],
-            "🌿 Day 3: Variables & Values": [
+            "Day 3": [
                 "Learn int, double, String",
                 "Use variables to track energy and direction",
                 "Design robots with identity",
             ],
-            "🌀 Day 4: Events & Output": [
+            "Day 4": [
                 "React to ScannedRobotEvent, HitByBulletEvent",
                 "Use print statements as narrative tools",
                 "Log errors in the console and note their causes",
             ],
-            "🏁 Day 5: Review Tournament": [
+            "Day 5": [
                 "Friendly tournament and player cards",
             ],
-            "🔁 Day 6: Logic & Loops": [
+            "Day 6": [
                 "Apply if, else, while, for",
                 "Change tactics when energy drops below 20%",
                 "Invite feedback from peers",
             ],
-            "🧯 Day 7: Debugging & Error Care": [
+            "Day 7": [
                 "Break code into helper methods",
                 "Discuss ownership and naming in code",
                 "Practice try/catch",
                 "Understand basic debugging",
                 "Model problem-solving through patience and friendliness",
             ],
-            "📐 Day 8: Strategy Design": [
+            "Day 8": [
                 "Plan robot behavior with diagrams and flowcharts",
                 "Brainstorm strategies for survival, not just attack",
                 "Refactor your robot for cleaner performance",
             ],
-            "🛠️ Day 9: Project Build": [
+            "Day 9": [
                 "Full build day with mentors",
                 "Encourage cascade mentorship",
                 "Invite community check-ins and progress showcases",
             ],
-            "🌈 Day 10: Tournament & Reflection": [
+            "Day 10": [
                 "Celebrate through a friendly competition",
                 "Showcase unique robot designs and strategies",
                 "Reflect on journey using peer & self-assessment tools",
